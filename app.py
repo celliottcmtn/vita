@@ -133,7 +133,7 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
         "statin_users": "Taking Statin Medications",
         "respiratory_issues": "Respiratory Issues",
         "liver_health": "Liver Health",
-        "longevity": "Longevity/Anti-Aging"
+        "longevity": "Longevity/Anti-Aging",
         "eye_health": "Eye Health",
         "nerve_health": "Nerve Health",
         "adrenal_support": "Adrenal Support",
