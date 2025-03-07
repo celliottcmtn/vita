@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import json
-import re
 
 # ======== DATA STRUCTURES ========
 
@@ -115,340 +113,41 @@ def load_data():
                     "price_range": "$35-60 for 2-month supply"
                 }
             }
-        },
-        "vitamin_b12": {
-            "name": "Vitamin B12",
-            "benefits": "Nerve function, red blood cell formation, DNA synthesis, energy metabolism",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["fatigue", "vegetarian_vegan", "anemia", "cognitive_function"]
-            },
-            "dosage": {
-                "20s": "2.4 mcg daily",
-                "30s": "2.4 mcg daily",
-                "40s": "2.4 mcg daily",
-                "50s": "2.4 mcg daily",
-                "60s": "2.4-1000 mcg daily",
-                "70plus": "2.4-1000 mcg daily (higher doses for absorption issues)"
-            },
-            "contraindications": [],
-            "interactions": ["metformin", "acid_reducers"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Cyanocobalamin tablets/capsules",
-                    "price_range": "$5-10 for 4-month supply"
-                },
-                "good": {
-                    "form": "Methylcobalamin tablets",
-                    "price_range": "$10-20 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Sublingual methylcobalamin with intrinsic factor",
-                    "price_range": "$20-35 for 3-month supply"
-                }
-            }
-        },
-        "probiotics": {
-            "name": "Probiotics",
-            "benefits": "Gut health, immune function, digestion support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["digestive_issues", "antibiotic_recovery", "immune_support", "longevity"]
-            },
-            "dosage": {
-                "20s": "10-30 billion CFU daily",
-                "30s": "10-30 billion CFU daily",
-                "40s": "10-30 billion CFU daily",
-                "50s": "10-30 billion CFU daily",
-                "60s": "10-30 billion CFU daily",
-                "70plus": "10-30 billion CFU daily"
-            },
-            "contraindications": ["severe_immunodeficiency"],
-            "interactions": ["antibiotics"],
-            "sources": ["https://www.nccih.nih.gov/health/probiotics-what-you-need-to-know"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Single-strain probiotics",
-                    "price_range": "$10-15 for 1-month supply"
-                },
-                "good": {
-                    "form": "Multi-strain probiotics (5-10 strains)",
-                    "price_range": "$20-30 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Shelf-stable multi-strain (10+ strains) with prebiotic",
-                    "price_range": "$35-50 for 1-month supply"
-                }
-            }
-        },
-        "vitamin_c": {
-            "name": "Vitamin C",
-            "benefits": "Immune support, antioxidant, collagen production, iron absorption",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["immune_support", "skin_health", "iron_deficiency", "longevity"]
-            },
-            "dosage": {
-                "20s": "75-90 mg daily",
-                "30s": "75-90 mg daily",
-                "40s": "75-90 mg daily",
-                "50s": "75-90 mg daily",
-                "60s": "75-90 mg daily",
-                "70plus": "75-90 mg daily (up to 500-1000 mg for immune support)"
-            },
-            "contraindications": ["history_of_kidney_stones"],
-            "interactions": ["blood_thinners", "statins", "chemotherapy"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminC-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ascorbic acid tablets",
-                    "price_range": "$5-10 for 3-month supply"
-                },
-                "good": {
-                    "form": "Buffered vitamin C with bioflavonoids",
-                    "price_range": "$15-25 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Liposomal vitamin C or whole-food vitamin C complex",
-                    "price_range": "$25-45 for 2-month supply"
-                }
-            }
-        },
-        "iron": {
-            "name": "Iron",
-            "benefits": "Red blood cell formation, oxygen transport, energy metabolism",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s"],
-                "genders": ["female"],  # Primarily for menstruating women
-                "health_concerns": ["anemia", "fatigue", "heavy_periods", "vegetarian_vegan"]
-            },
-            "dosage": {
-                "20s": "18 mg daily (menstruating females), 8 mg daily (males)",
-                "30s": "18 mg daily (menstruating females), 8 mg daily (males)",
-                "40s": "18 mg daily (menstruating females), 8 mg daily (males)",
-                "50s": "8-18 mg daily (depends on menopause status)"
-            },
-            "contraindications": ["hemochromatosis", "thalassemia"],
-            "interactions": ["calcium_supplements", "antacids", "certain_antibiotics", "vitamin_e"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ferrous sulfate",
-                    "price_range": "$5-10 for 3-month supply"
-                },
-                "good": {
-                    "form": "Ferrous gluconate or ferrous glycinate",
-                    "price_range": "$10-20 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Iron bisglycinate chelate with vitamin C",
-                    "price_range": "$20-35 for 3-month supply"
-                }
-            }
-        },
-        "calcium": {
-            "name": "Calcium",
-            "benefits": "Bone health, muscle function, nerve transmission",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["female"],  # Especially important for women
-                "health_concerns": ["bone_health", "osteoporosis_risk"]
-            },
-            "dosage": {
-                "20s": "1000 mg daily",
-                "30s": "1000 mg daily",
-                "40s": "1000 mg daily",
-                "50s": "1200 mg daily",
-                "60s": "1200 mg daily",
-                "70plus": "1200 mg daily"
-            },
-            "contraindications": ["hypercalcemia", "kidney_stones"],
-            "interactions": ["iron_supplements", "thyroid_medication", "certain_antibiotics", "zinc"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Calcium-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Calcium carbonate",
-                    "price_range": "$5-10 for 2-month supply"
-                },
-                "good": {
-                    "form": "Calcium citrate",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Calcium citrate with vitamin D3, K2, and magnesium",
-                    "price_range": "$25-40 for 2-month supply"
-                }
-            }
-        },
-        "coq10": {
-            "name": "Coenzyme Q10 (CoQ10)",
-            "benefits": "Cellular energy production, antioxidant, heart health, anti-aging",
-            "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["heart_health", "fatigue", "statin_users", "longevity"]
-            },
-            "dosage": {
-                "40s": "100-200 mg daily",
-                "50s": "100-200 mg daily",
-                "60s": "100-300 mg daily",
-                "70plus": "100-300 mg daily"
-            },
-            "contraindications": [],
-            "interactions": ["blood_thinners", "insulin", "chemotherapy"],
-            "sources": ["https://www.mayoclinic.org/drugs-supplements-coenzyme-q10/art-20362602"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ubiquinone (regular CoQ10)",
-                    "price_range": "$15-25 for 1-month supply"
-                },
-                "good": {
-                    "form": "Ubiquinol (active form)",
-                    "price_range": "$30-45 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Ubiquinol with enhanced absorption (in oil base)",
-                    "price_range": "$45-70 for 1-month supply"
-                }
-            }
-        },
-        "vitamin_k2": {
-            "name": "Vitamin K2",
-            "benefits": "Bone health, cardiovascular health, calcium regulation",
-            "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["bone_health", "heart_health", "osteoporosis_risk", "longevity"]
-            },
-            "dosage": {
-                "40s": "90-120 mcg daily",
-                "50s": "90-180 mcg daily",
-                "60s": "90-180 mcg daily",
-                "70plus": "90-180 mcg daily"
-            },
-            "contraindications": [],
-            "interactions": ["blood_thinners", "certain_antibiotics"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminK-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "K2 (MK-7) supplements",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "good": {
-                    "form": "K2 (MK-7) with D3",
-                    "price_range": "$25-40 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Full-spectrum K2 (MK-4 and MK-7) with D3",
-                    "price_range": "$40-60 for 2-month supply"
-                }
-            }
-        },
-        "resveratrol": {
-            "name": "Resveratrol",
-            "benefits": "Antioxidant, anti-aging, cardiovascular support",
-            "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["longevity", "heart_health"]
-            },
-            "dosage": {
-                "40s": "100-500 mg daily",
-                "50s": "100-500 mg daily",
-                "60s": "100-500 mg daily",
-                "70plus": "100-500 mg daily"
-            },
-            "contraindications": [],
-            "interactions": ["blood_thinners", "certain_medications_metabolized_by_liver"],
-            "sources": ["https://www.nccih.nih.gov/health/resveratrol"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Standard resveratrol supplements",
-                    "price_range": "$15-30 for 1-month supply"
-                },
-                "good": {
-                    "form": "Trans-resveratrol (more bioavailable)",
-                    "price_range": "$30-50 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Trans-resveratrol with enhanced absorption",
-                    "price_range": "$50-80 for 1-month supply"
-                }
-            }
-        },
-        "nac": {
-            "name": "N-Acetyl Cysteine (NAC)",
-            "benefits": "Antioxidant, liver support, respiratory health, glutathione production",
-            "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female"],
-                "health_concerns": ["longevity", "respiratory_issues", "liver_health"]
-            },
-            "dosage": {
-                "40s": "600-1200 mg daily",
-                "50s": "600-1200 mg daily",
-                "60s": "600-1200 mg daily",
-                "70plus": "600-1200 mg daily"
-            },
-            "contraindications": ["asthma (may worsen in some cases)"],
-            "interactions": ["nitroglycerin", "certain_blood_pressure_medications"],
-            "sources": ["https://www.mayoclinic.org/drugs-supplements-n-acetyl-cysteine/art-20360711"],
-            "budget_tier": {
-                "essential": {
-                    "form": "NAC capsules",
-                    "price_range": "$15-25 for 1-month supply"
-                },
-                "good": {
-                    "form": "NAC with selenium",
-                    "price_range": "$25-40 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Sustained-release NAC with supporting nutrients",
-                    "price_range": "$40-60 for 1-month supply"
-                }
-            }
         }
     }
     
-    # Interactions data - which supplements may reduce efficacy when taken together
+    # Simplified interactions data
     interactions_data = {
         "calcium": ["iron", "zinc", "magnesium"],
-        "iron": ["calcium", "vitamin_e", "zinc"],
-        "zinc": ["calcium", "iron", "copper"],
-        "magnesium": ["calcium"],
-        "vitamin_c": ["b12"],
-        "vitamin_e": ["vitamin_k2"],
+        "iron": ["calcium", "zinc"],
+        "magnesium": ["calcium"]
     }
     
-    # Health concerns that are more common or important by age group and gender
+    # Simplified health concerns by age group and gender
     age_health_concerns = {
         "20s": {
-            "male": ["immune_support", "fitness_performance", "stress"],
-            "female": ["immune_support", "iron_deficiency", "stress", "reproductive_health"]
+            "male": ["immune_support", "fitness_performance"],
+            "female": ["immune_support", "iron_deficiency"]
         },
         "30s": {
-            "male": ["energy_levels", "stress", "immune_support", "fitness_performance"],
-            "female": ["energy_levels", "stress", "reproductive_health", "iron_deficiency"]
+            "male": ["energy_levels", "stress"],
+            "female": ["energy_levels", "iron_deficiency"]
         },
         "40s": {
-            "male": ["heart_health", "energy_levels", "stress", "longevity"],
-            "female": ["energy_levels", "stress", "bone_health", "hormone_balance"]
+            "male": ["heart_health", "stress", "longevity"],
+            "female": ["energy_levels", "bone_health"]
         },
         "50s": {
-            "male": ["heart_health", "prostate_health", "joint_pain", "cognitive_function", "longevity"],
-            "female": ["bone_health", "hormone_balance", "heart_health", "joint_pain", "longevity"]
+            "male": ["heart_health", "joint_pain", "longevity"],
+            "female": ["bone_health", "heart_health", "longevity"]
         },
         "60s": {
-            "male": ["heart_health", "joint_pain", "cognitive_function", "prostate_health", "longevity"],
-            "female": ["bone_health", "heart_health", "joint_pain", "cognitive_function", "longevity"]
+            "male": ["heart_health", "cognitive_function", "longevity"],
+            "female": ["bone_health", "heart_health", "longevity"]
         },
         "70plus": {
-            "male": ["heart_health", "cognitive_function", "bone_health", "immune_support", "longevity"],
-            "female": ["bone_health", "heart_health", "cognitive_function", "immune_support", "longevity"]
+            "male": ["heart_health", "cognitive_function", "longevity"],
+            "female": ["bone_health", "heart_health", "longevity"]
         }
     }
     
@@ -641,7 +340,7 @@ def check_interactions(recommendations, interactions_data, medications):
     
     return potential_interactions
 
-def display_recommendations(recommendations, interactions, budget_tier):
+def display_recommendations(recommendations, interactions, budget_tier, age_group):
     st.header("Your Personalized Supplement Recommendations")
     
     if not recommendations:
@@ -710,7 +409,7 @@ def display_timing_guide(recommendations):
         "bedtime": []
     }
     
-    # Simple rules for categorizing supplements (could be more sophisticated)
+    # Simple rules for categorizing supplements
     for supp_id, rec_data in recommendations.items():
         supplement = rec_data["supplement"]
         name = supplement["name"]
@@ -723,16 +422,10 @@ def display_timing_guide(recommendations):
             timing_categories["morning_empty_stomach"].append(name)
         elif name in ["Vitamin C"]:
             timing_categories["afternoon"].append(name)
-        elif name in ["Calcium", "Magnesium"]:
+        elif name in ["Calcium"]:
             timing_categories["evening_with_food"].append(name)
         elif name in ["Magnesium"]:
             timing_categories["bedtime"].append(name)
-        elif name in ["Coenzyme Q10 (CoQ10)", "Vitamin K2"]:
-            timing_categories["morning_with_food"].append(name)
-        elif name in ["Resveratrol"]:
-            timing_categories["morning_with_food"].append(name)
-        elif name in ["N-Acetyl Cysteine (NAC)"]:
-            timing_categories["morning_with_food"].append(name)
         else:
             # Default to morning with food if no specific rule
             timing_categories["morning_with_food"].append(name)
@@ -784,7 +477,7 @@ def display_timing_guide(recommendations):
     5. **Probiotics** are often best taken in the morning on an empty stomach
     """)
 
-def create_supplement_plan(recommendations, budget_tier, interactions):
+def create_supplement_plan(recommendations, budget_tier, interactions, age_group):
     st.header("Your Personalized Supplement Plan")
     
     if not recommendations:
@@ -862,14 +555,14 @@ def main():
             # Check for potential interactions
             interactions = check_interactions(recommendations, interactions_data, medications)
             
-            # Display recommendations
-            display_recommendations(recommendations, interactions, budget_tier)
+            # Display recommendations - Now passing age_group as parameter
+            display_recommendations(recommendations, interactions, budget_tier, age_group)
             
             # Display timing guide
             display_timing_guide(recommendations)
             
-            # Create and offer downloadable plan
-            create_supplement_plan(recommendations, budget_tier, interactions)
+            # Create and offer downloadable plan - Now passing age_group as parameter
+            create_supplement_plan(recommendations, budget_tier, interactions, age_group)
     
     # Footer
     st.markdown("---")
