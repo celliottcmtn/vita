@@ -3,13 +3,9 @@ import pandas as pd
 
 # ======== DATA STRUCTURES ========
 
-# Load data from JSON files (in a real app, we would have these data files)
 def load_data():
-    """
-    Load supplement data from JSON files.
-    In a production environment, these would be actual files.
-    """
-    # Sample data structure - in production, load from files
+    """Load supplement data structures"""
+    # Simplified supplement data
     supplements_data = {
         "vitamin_d": {
             "name": "Vitamin D",
@@ -36,96 +32,199 @@ def load_data():
                     "price_range": "$5-15 for 3-month supply"
                 },
                 "good": {
-                    "form": "Mixed carotenoids with preformed vitamin A",
+                    "form": "D3 + K2 combination",
+                    "price_range": "$15-25 for 3-month supply"
+                },
+                "ideal": {
+                    "form": "Liposomal D3 + K2 with organic oils",
+                    "price_range": "$25-40 for 3-month supply"
+                }
+            }
+        },
+        "magnesium": {
+            "name": "Magnesium",
+            "benefits": "Muscle function, nerve function, energy production, sleep quality",
+            "recommended_for": {
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
+                "genders": ["male", "female", "prefer_not_to_say"],
+                "health_concerns": ["muscle_cramps", "sleep_issues", "stress", "heart_health", "longevity"]
+            },
+            "dosage": {
+                "20s": "310-400 mg daily",
+                "30s": "310-420 mg daily",
+                "40s": "320-420 mg daily",
+                "50s": "320-420 mg daily",
+                "60s": "320-420 mg daily",
+                "70plus": "320-420 mg daily"
+            },
+            "contraindications": ["kidney_failure"],
+            "interactions": ["antibiotics", "diuretics", "heart_medication"],
+            "sources": ["https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"],
+            "budget_tier": {
+                "essential": {
+                    "form": "Magnesium oxide",
+                    "price_range": "$5-10 for 2-month supply",
+                    "note": "Less bioavailable but affordable"
+                },
+                "good": {
+                    "form": "Magnesium citrate or glycinate",
+                    "price_range": "$15-25 for 2-month supply"
+                },
+                "ideal": {
+                    "form": "Magnesium threonate or glycinate complex with B6",
+                    "price_range": "$30-45 for 2-month supply"
+                }
+            }
+        },
+        "omega_3": {
+            "name": "Omega-3 Fatty Acids",
+            "benefits": "Heart health, brain function, anti-inflammatory, joint support",
+            "recommended_for": {
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
+                "genders": ["male", "female", "prefer_not_to_say"],
+                "health_concerns": ["heart_health", "joint_pain", "cognitive_function", "depression", "longevity"]
+            },
+            "dosage": {
+                "20s": "1000-2000 mg daily",
+                "30s": "1000-2000 mg daily",
+                "40s": "1000-3000 mg daily",
+                "50s": "1000-3000 mg daily",
+                "60s": "1000-3000 mg daily",
+                "70plus": "1000-3000 mg daily"
+            },
+            "contraindications": ["bleeding_disorders"],
+            "interactions": ["blood_thinners", "high_blood_pressure_medication"],
+            "sources": ["https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/"],
+            "budget_tier": {
+                "essential": {
+                    "form": "Fish oil capsules",
+                    "price_range": "$10-20 for 2-month supply"
+                },
+                "good": {
+                    "form": "Concentrated fish oil (higher EPA/DHA)",
+                    "price_range": "$20-35 for 2-month supply"
+                },
+                "ideal": {
+                    "form": "Triglyceride-form fish oil or algae-based (vegetarian)",
+                    "price_range": "$35-60 for 2-month supply"
+                }
+            }
+        },
+        "vitamin_b12": {
+            "name": "Vitamin B12",
+            "benefits": "Nerve function, red blood cell formation, DNA synthesis, energy metabolism",
+            "recommended_for": {
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
+                "genders": ["male", "female", "prefer_not_to_say"],
+                "health_concerns": ["fatigue", "vegetarian_vegan", "anemia", "cognitive_function"]
+            },
+            "dosage": {
+                "20s": "2.4 mcg daily",
+                "30s": "2.4 mcg daily",
+                "40s": "2.4 mcg daily",
+                "50s": "2.4 mcg daily",
+                "60s": "2.4-1000 mcg daily",
+                "70plus": "2.4-1000 mcg daily (higher doses for absorption issues)"
+            },
+            "contraindications": [],
+            "interactions": ["metformin", "acid_reducers"],
+            "sources": ["https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/"],
+            "budget_tier": {
+                "essential": {
+                    "form": "Cyanocobalamin tablets/capsules",
+                    "price_range": "$5-10 for 4-month supply"
+                },
+                "good": {
+                    "form": "Methylcobalamin tablets",
                     "price_range": "$10-20 for 3-month supply"
                 },
                 "ideal": {
-                    "form": "Full-spectrum vitamin A complex with fat-soluble cofactors",
+                    "form": "Sublingual methylcobalamin with intrinsic factor",
                     "price_range": "$20-35 for 3-month supply"
                 }
             }
         },
-        "quercetin": {
-            "name": "Quercetin",
-            "benefits": "Anti-inflammatory, antioxidant, immune support, anti-allergy",
+        "taurine": {
+            "name": "Taurine",
+            "benefits": "Heart health, exercise performance, antioxidant, cognitive function",
             "recommended_for": {
-                "age_groups": ["30s", "40s", "50s", "60s", "70plus"],
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
                 "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["immune_support", "allergies", "inflammation", "longevity"]
+                "health_concerns": ["heart_health", "fitness_performance", "cognitive_function", "longevity"]
             },
             "dosage": {
-                "30s": "500-1000 mg daily",
-                "40s": "500-1000 mg daily",
-                "50s": "500-1000 mg daily",
-                "60s": "500-1000 mg daily",
-                "70plus": "500-1000 mg daily"
+                "20s": "500-2000 mg daily",
+                "30s": "500-2000 mg daily",
+                "40s": "500-3000 mg daily",
+                "50s": "500-3000 mg daily",
+                "60s": "500-3000 mg daily",
+                "70plus": "500-3000 mg daily"
             },
             "contraindications": [],
-            "interactions": ["blood_thinners", "antibiotics", "cyclosporine"],
-            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5214562/"],
+            "interactions": ["lithium"],
+            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5933890/"],
             "budget_tier": {
                 "essential": {
-                    "form": "Quercetin dihydrate",
-                    "price_range": "$15-25 for 1-month supply"
+                    "form": "Taurine powder",
+                    "price_range": "$10-15 for 2-month supply"
                 },
                 "good": {
-                    "form": "Quercetin with bromelain",
-                    "price_range": "$25-40 for 1-month supply"
+                    "form": "Taurine capsules",
+                    "price_range": "$15-25 for 2-month supply"
                 },
                 "ideal": {
-                    "form": "Quercetin phytosome or liposomal formula",
-                    "price_range": "$40-60 for 1-month supply"
+                    "form": "Pharmaceutical-grade taurine with increased bioavailability",
+                    "price_range": "$25-40 for 2-month supply"
                 }
             }
         },
-        "berberine": {
-            "name": "Berberine",
-            "benefits": "Blood sugar control, cholesterol management, gut health",
+        "choline": {
+            "name": "Choline",
+            "benefits": "Brain health, liver function, metabolism, nervous system support",
             "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
                 "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["blood_sugar_management", "heart_health", "digestive_issues", "longevity"]
+                "health_concerns": ["cognitive_function", "liver_health", "fitness_performance"]
             },
             "dosage": {
-                "40s": "500-1500 mg daily (divided doses)",
-                "50s": "500-1500 mg daily (divided doses)",
-                "60s": "500-1500 mg daily (divided doses)",
-                "70plus": "500-1500 mg daily (divided doses)"
+                "20s": "425-550 mg daily",
+                "30s": "425-550 mg daily",
+                "40s": "425-550 mg daily",
+                "50s": "425-550 mg daily",
+                "60s": "425-550 mg daily",
+                "70plus": "425-550 mg daily"
             },
-            "contraindications": ["pregnancy", "jaundice"],
-            "interactions": ["diabetes_medications", "blood_thinners", "certain_antibiotics"],
-            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6111450/"],
+            "contraindications": ["trimethylaminuria"],
+            "interactions": [],
+            "sources": ["https://ods.od.nih.gov/factsheets/Choline-HealthProfessional/"],
             "budget_tier": {
                 "essential": {
-                    "form": "Berberine HCl",
-                    "price_range": "$20-30 for 1-month supply"
+                    "form": "Choline bitartrate",
+                    "price_range": "$10-20 for 2-month supply"
                 },
                 "good": {
-                    "form": "Berberine complex with alpha-lipoic acid",
-                    "price_range": "$30-45 for 1-month supply"
+                    "form": "Alpha-GPC or CDP-choline",
+                    "price_range": "$25-40 for 1-month supply"
                 },
                 "ideal": {
-                    "form": "Dihydroberberine or high-absorption berberine",
-                    "price_range": "$45-70 for 1-month supply"
+                    "form": "Combination of Alpha-GPC and CDP-choline",
+                    "price_range": "$40-60 for 1-month supply"
                 }
             }
         }
     }
     
-    # Interactions data - which supplements may reduce efficacy when taken together
+    # Interactions data
     interactions_data = {
         "calcium": ["iron", "zinc", "magnesium"],
         "iron": ["calcium", "vitamin_e", "zinc"],
         "zinc": ["calcium", "iron", "copper"],
         "magnesium": ["calcium"],
         "vitamin_c": ["b12"],
-        "vitamin_e": ["vitamin_k2"],
-        "curcumin": ["iron"],
-        "quercetin": ["iron"],
-        "vitamin_a": ["vitamin_e", "vitamin_k2"]
+        "vitamin_e": ["vitamin_k2"]
     }
     
-    # Health concerns that are more common or important by age group and gender
+    # Health concerns by age group and gender
     age_health_concerns = {
         "20s": {
             "male": ["immune_support", "fitness_performance", "stress"],
@@ -230,12 +329,7 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
         "statin_users": "Taking Statin Medications",
         "respiratory_issues": "Respiratory Issues",
         "liver_health": "Liver Health",
-        "longevity": "Longevity/Anti-Aging",
-        "blood_sugar_management": "Blood Sugar Management",
-        "allergies": "Allergies",
-        "inflammation": "Inflammation",
-        "eye_health": "Eye Health",
-        "muscle_loss_prevention": "Muscle Loss Prevention"
+        "longevity": "Longevity/Anti-Aging"
     }
     
     # Convert technical terms to readable format for display
@@ -429,18 +523,16 @@ def display_timing_guide(recommendations):
         
         if name in ["Iron"]:
             timing_categories["morning_empty_stomach"].append(name)
-        elif name in ["Vitamin D", "Vitamin B12", "Omega-3 Fatty Acids", "Coenzyme Q10 (CoQ10)", "Vitamin A", "Vitamin E"]:
+        elif name in ["Vitamin D", "Vitamin B12", "Omega-3 Fatty Acids"]:
             timing_categories["morning_with_food"].append(name)
         elif name in ["Probiotics"]:
             timing_categories["morning_empty_stomach"].append(name)
-        elif name in ["Vitamin C", "Choline", "Taurine", "Berberine"]:
+        elif name in ["Vitamin C", "Choline", "Taurine"]:
             timing_categories["afternoon"].append(name)
-        elif name in ["Calcium", "Curcumin (Turmeric Extract)"]:
+        elif name in ["Calcium"]:
             timing_categories["evening_with_food"].append(name)
-        elif name in ["Magnesium", "Ashwagandha"]:
+        elif name in ["Magnesium"]:
             timing_categories["bedtime"].append(name)
-        elif name in ["Vitamin K2", "Zinc", "Quercetin", "Creatine"]:
-            timing_categories["morning_with_food"].append(name)
         else:
             # Default to morning with food if no specific rule
             timing_categories["morning_with_food"].append(name)
@@ -490,8 +582,6 @@ def display_timing_guide(recommendations):
     3. **B vitamins** may boost energy, so taking them late in the day might affect sleep
     4. **Calcium and magnesium** can compete for absorption, so take at different times
     5. **Probiotics** are often best taken in the morning on an empty stomach
-    6. **Adaptogens** like Ashwagandha may support sleep when taken in the evening
-    7. **Berberine** should be taken before meals for blood sugar support
     """)
 
 def create_supplement_plan(recommendations, budget_tier, interactions, age_group):
@@ -590,575 +680,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    "form": "D3 + K2 combination",
-                    "price_range": "$15-25 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Liposomal D3 + K2 with organic oils",
-                    "price_range": "$25-40 for 3-month supply"
-                }
-            }
-        },
-        "magnesium": {
-            "name": "Magnesium",
-            "benefits": "Muscle function, nerve function, energy production, sleep quality",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["muscle_cramps", "sleep_issues", "stress", "heart_health", "longevity"]
-            },
-            "dosage": {
-                "20s": "310-400 mg daily",
-                "30s": "310-420 mg daily",
-                "40s": "320-420 mg daily",
-                "50s": "320-420 mg daily",
-                "60s": "320-420 mg daily",
-                "70plus": "320-420 mg daily"
-            },
-            "contraindications": ["kidney_failure"],
-            "interactions": ["antibiotics", "diuretics", "heart_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Magnesium oxide",
-                    "price_range": "$5-10 for 2-month supply",
-                    "note": "Less bioavailable but affordable"
-                },
-                "good": {
-                    "form": "Magnesium citrate or glycinate",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Magnesium threonate or glycinate complex with B6",
-                    "price_range": "$30-45 for 2-month supply"
-                }
-            }
-        },
-        "omega_3": {
-            "name": "Omega-3 Fatty Acids",
-            "benefits": "Heart health, brain function, anti-inflammatory, joint support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["heart_health", "joint_pain", "cognitive_function", "depression", "longevity"]
-            },
-            "dosage": {
-                "20s": "1000-2000 mg daily",
-                "30s": "1000-2000 mg daily",
-                "40s": "1000-3000 mg daily",
-                "50s": "1000-3000 mg daily",
-                "60s": "1000-3000 mg daily",
-                "70plus": "1000-3000 mg daily"
-            },
-            "contraindications": ["bleeding_disorders"],
-            "interactions": ["blood_thinners", "high_blood_pressure_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Fish oil capsules",
-                    "price_range": "$10-20 for 2-month supply"
-                },
-                "good": {
-                    "form": "Concentrated fish oil (higher EPA/DHA)",
-                    "price_range": "$20-35 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Triglyceride-form fish oil or algae-based (vegetarian)",
-                    "price_range": "$35-60 for 2-month supply"
-                }
-            }
-        },
-        "vitamin_b12": {
-            "name": "Vitamin B12",
-            "benefits": "Nerve function, red blood cell formation, DNA synthesis, energy metabolism",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["fatigue", "vegetarian_vegan", "anemia", "cognitive_function"]
-            },
-            "dosage": {
-                "20s": "2.4 mcg daily",
-                "30s": "2.4 mcg daily",
-                "40s": "2.4 mcg daily",
-                "50s": "2.4 mcg daily",
-                "60s": "2.4-1000 mcg daily",
-                "70plus": "2.4-1000 mcg daily (higher doses for absorption issues)"
-            },
-            "contraindications": [],
-            "interactions": ["metformin", "acid_reducers"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Cyanocobalamin tablets/capsules",
-                    "price_range": "$5-10 for 4-month supply"
-                },
-                "good": {
-                    "form": "Methylcobalamin tablets",
-                    "price_range": "$10-20 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Sublingual methylcobalamin with intrinsic factor",
-                    "price_range": "$20-35 for 3-month supply"
-                }
-            }
-        },
-        "probiotics": {
-            "name": "Probiotics",
-            "benefits": "Gut health, immune function, digestion support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["digestive_issues", "antibiotic_recovery", "immune_support", "longevity"]
-            },
-            "dosage": {
-                "20s": "10-30 billion CFU daily",
-                "30s": "10-30 billion CFU daily",
-                "40s": "10-30 billion CFU daily",
-                "50s": "10-30 billion CFU daily",
-                "60s": "10-30 billion CFU daily",
-                "70plus": "10-30 billion CFU daily"
-            },
-            "contraindications": ["severe_immunodeficiency"],
-            "interactions": ["antibiotics"],
-            "sources": ["https://www.nccih.nih.gov/health/probiotics-what-you-need-to-know"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Single-strain probiotics",
-                    "price_range": "$10-15 for 1-month supply"
-                },
-                "good": {
-                    "form": "Multi-strain probiotics (5-10 strains)",
-                    "price_range": "$20-30 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Shelf-stable multi-strain (10+ strains) with prebiotic",
-                    "price_range": "$35-50 for 1-month supply"
-                }
-            }
-        },
-        "vitamin_c": {
-            "name": "Vitamin C",
-            "benefits": "Immune support, antioxidant, collagen production, iron absorption",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["immune_support", "skin_health", "iron_deficiency", "longevity"]
-            },
-            "dosage": {
-                "20s": "75-90 mg daily",
-                "30s": "75-90 mg daily",
-                "40s": "75-90 mg daily",
-                "50s": "75-90 mg daily",
-                "60s": "75-90 mg daily",
-                "70plus": "75-90 mg daily (up to 500-1000 mg for immune support)"
-            },
-            "contraindications": ["history_of_kidney_stones"],
-            "interactions": ["blood_thinners", "statins", "chemotherapy"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminC-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ascorbic acid tablets",
-                    "price_range": "$5-10 for 3-month supply"
-                },
-                "good": {
-                    "form": "Buffered vitamin C with bioflavonoids",
-                    "price_range": "$15-25 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Liposomal vitamin C or whole-food vitamin C complex",
-                    "price_range": "$25-45 for 2-month supply"
-                }
-            }
-        },
-        "iron": {
-            "name": "Iron",
-            "benefits": "Red blood cell formation, oxygen transport, energy metabolism",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s"],
-                "genders": ["female", "prefer_not_to_say"],  # More common for females but can apply to anyone
-                "health_concerns": ["anemia", "fatigue", "heavy_periods", "vegetarian_vegan"]
-            },
-            "dosage": {
-                "20s": "18 mg daily (menstruating females), 8 mg daily (others)",
-                "30s": "18 mg daily (menstruating females), 8 mg daily (others)",
-                "40s": "18 mg daily (menstruating females), 8 mg daily (others)",
-                "50s": "8-18 mg daily (depends on menopause status)"
-            },
-            "contraindications": ["hemochromatosis", "thalassemia"],
-            "interactions": ["calcium_supplements", "antacids", "certain_antibiotics", "vitamin_e"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ferrous sulfate",
-                    "price_range": "$5-10 for 3-month supply"
-                },
-                "good": {
-                    "form": "Ferrous gluconate or ferrous glycinate",
-                    "price_range": "$10-20 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Iron bisglycinate chelate with vitamin C",
-                    "price_range": "$20-35 for 3-month supply"
-                }
-            }
-        },
-        "calcium": {
-            "name": "Calcium",
-            "benefits": "Bone health, muscle function, nerve transmission",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["female", "prefer_not_to_say"],  # Especially important for women, but can apply to anyone
-                "health_concerns": ["bone_health", "osteoporosis_risk"]
-            },
-            "dosage": {
-                "20s": "1000 mg daily",
-                "30s": "1000 mg daily",
-                "40s": "1000 mg daily",
-                "50s": "1200 mg daily",
-                "60s": "1200 mg daily",
-                "70plus": "1200 mg daily"
-            },
-            "contraindications": ["hypercalcemia", "kidney_stones"],
-            "interactions": ["iron_supplements", "thyroid_medication", "certain_antibiotics", "zinc"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Calcium-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Calcium carbonate",
-                    "price_range": "$5-10 for 2-month supply"
-                },
-                "good": {
-                    "form": "Calcium citrate",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Calcium citrate with vitamin D3, K2, and magnesium",
-                    "price_range": "$25-40 for 2-month supply"
-                }
-            }
-        },
-        "coq10": {
-            "name": "Coenzyme Q10 (CoQ10)",
-            "benefits": "Cellular energy production, antioxidant, heart health, anti-aging",
-            "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["heart_health", "fatigue", "statin_users", "longevity"]
-            },
-            "dosage": {
-                "40s": "100-200 mg daily",
-                "50s": "100-200 mg daily",
-                "60s": "100-300 mg daily",
-                "70plus": "100-300 mg daily"
-            },
-            "contraindications": [],
-            "interactions": ["blood_thinners", "insulin", "chemotherapy"],
-            "sources": ["https://www.mayoclinic.org/drugs-supplements-coenzyme-q10/art-20362602"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ubiquinone (regular CoQ10)",
-                    "price_range": "$15-25 for 1-month supply"
-                },
-                "good": {
-                    "form": "Ubiquinol (active form)",
-                    "price_range": "$30-45 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Ubiquinol with enhanced absorption (in oil base)",
-                    "price_range": "$45-70 for 1-month supply"
-                }
-            }
-        },
-        "vitamin_k2": {
-            "name": "Vitamin K2",
-            "benefits": "Bone health, cardiovascular health, calcium regulation",
-            "recommended_for": {
-                "age_groups": ["40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["bone_health", "heart_health", "osteoporosis_risk", "longevity"]
-            },
-            "dosage": {
-                "40s": "90-120 mcg daily",
-                "50s": "90-180 mcg daily",
-                "60s": "90-180 mcg daily",
-                "70plus": "90-180 mcg daily"
-            },
-            "contraindications": [],
-            "interactions": ["blood_thinners", "certain_antibiotics"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminK-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "K2 (MK-7) supplements",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "good": {
-                    "form": "K2 (MK-7) with D3",
-                    "price_range": "$25-40 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Full-spectrum K2 (MK-4 and MK-7) with D3",
-                    "price_range": "$40-60 for 2-month supply"
-                }
-            }
-        },
-        "taurine": {
-            "name": "Taurine",
-            "benefits": "Heart health, exercise performance, antioxidant, cognitive function",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["heart_health", "fitness_performance", "cognitive_function", "longevity"]
-            },
-            "dosage": {
-                "20s": "500-2000 mg daily",
-                "30s": "500-2000 mg daily",
-                "40s": "500-3000 mg daily",
-                "50s": "500-3000 mg daily",
-                "60s": "500-3000 mg daily",
-                "70plus": "500-3000 mg daily"
-            },
-            "contraindications": [],
-            "interactions": ["lithium"],
-            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5933890/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Taurine powder",
-                    "price_range": "$10-15 for 2-month supply"
-                },
-                "good": {
-                    "form": "Taurine capsules",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Pharmaceutical-grade taurine with increased bioavailability",
-                    "price_range": "$25-40 for 2-month supply"
-                }
-            }
-        },
-        "choline": {
-            "name": "Choline",
-            "benefits": "Brain health, liver function, metabolism, nervous system support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["cognitive_function", "liver_health", "fitness_performance"]
-            },
-            "dosage": {
-                "20s": "425-550 mg daily",
-                "30s": "425-550 mg daily",
-                "40s": "425-550 mg daily",
-                "50s": "425-550 mg daily",
-                "60s": "425-550 mg daily",
-                "70plus": "425-550 mg daily"
-            },
-            "contraindications": ["trimethylaminuria"],
-            "interactions": [],
-            "sources": ["https://ods.od.nih.gov/factsheets/Choline-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Choline bitartrate",
-                    "price_range": "$10-20 for 2-month supply"
-                },
-                "good": {
-                    "form": "Alpha-GPC or CDP-choline",
-                    "price_range": "$25-40 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Combination of Alpha-GPC and CDP-choline",
-                    "price_range": "$40-60 for 1-month supply"
-                }
-            }
-        },
-        "zinc": {
-            "name": "Zinc",
-            "benefits": "Immune function, wound healing, DNA synthesis, taste and smell",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["immune_support", "skin_health", "reproductive_health"]
-            },
-            "dosage": {
-                "20s": "8-11 mg daily",
-                "30s": "8-11 mg daily",
-                "40s": "8-11 mg daily",
-                "50s": "8-11 mg daily",
-                "60s": "8-11 mg daily",
-                "70plus": "8-11 mg daily"
-            },
-            "contraindications": [],
-            "interactions": ["antibiotics", "penicillamine", "copper_supplements"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Zinc-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Zinc gluconate",
-                    "price_range": "$5-10 for 3-month supply"
-                },
-                "good": {
-                    "form": "Zinc picolinate",
-                    "price_range": "$10-20 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Zinc bisglycinate with copper",
-                    "price_range": "$20-30 for 3-month supply"
-                }
-            }
-        },
-        "ashwagandha": {
-            "name": "Ashwagandha",
-            "benefits": "Stress reduction, anxiety relief, hormone balance, inflammation reduction",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["stress", "sleep_issues", "hormone_balance"]
-            },
-            "dosage": {
-                "20s": "300-600 mg daily",
-                "30s": "300-600 mg daily",
-                "40s": "300-600 mg daily",
-                "50s": "300-600 mg daily",
-                "60s": "300-600 mg daily",
-                "70plus": "300-600 mg daily"
-            },
-            "contraindications": ["autoimmune disorders", "pregnancy"],
-            "interactions": ["sedatives", "thyroid_medication", "immunosuppressants"],
-            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6979308/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Ashwagandha powder or basic extract",
-                    "price_range": "$10-15 for 1-month supply"
-                },
-                "good": {
-                    "form": "KSM-66 Ashwagandha (standardized extract)",
-                    "price_range": "$20-30 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Sensoril or high-potency full-spectrum extract",
-                    "price_range": "$30-45 for 1-month supply"
-                }
-            }
-        },
-        "vitamin_e": {
-            "name": "Vitamin E",
-            "benefits": "Antioxidant protection, skin health, immune function",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["skin_health", "heart_health", "longevity"]
-            },
-            "dosage": {
-                "20s": "15 mg (22.5 IU) daily",
-                "30s": "15 mg (22.5 IU) daily",
-                "40s": "15 mg (22.5 IU) daily",
-                "50s": "15 mg (22.5 IU) daily",
-                "60s": "15 mg (22.5 IU) daily",
-                "70plus": "15 mg (22.5 IU) daily"
-            },
-            "contraindications": ["vitamin K deficiency", "bleeding disorders"],
-            "interactions": ["blood_thinners", "certain_chemotherapy_drugs"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminE-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Alpha-tocopherol",
-                    "price_range": "$5-15 for 3-month supply"
-                },
-                "good": {
-                    "form": "Mixed tocopherols",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Full-spectrum vitamin E (tocopherols and tocotrienols)",
-                    "price_range": "$25-40 for 2-month supply"
-                }
-            }
-        },
-        "creatine": {
-            "name": "Creatine",
-            "benefits": "Muscle strength, exercise performance, cognitive function, energy production",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["fitness_performance", "cognitive_function", "muscle_loss_prevention"]
-            },
-            "dosage": {
-                "20s": "3-5 g daily",
-                "30s": "3-5 g daily",
-                "40s": "3-5 g daily",
-                "50s": "3-5 g daily",
-                "60s": "3-5 g daily",
-                "70plus": "3-5 g daily"
-            },
-            "contraindications": ["kidney_disease"],
-            "interactions": ["nephrotoxic_medications", "caffeine"],
-            "sources": ["https://pubmed.ncbi.nlm.nih.gov/14561278/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Creatine monohydrate powder",
-                    "price_range": "$10-20 for 2-month supply"
-                },
-                "good": {
-                    "form": "Micronized creatine monohydrate",
-                    "price_range": "$20-30 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Creapure® creatine monohydrate or creatine HCL",
-                    "price_range": "$30-45 for 2-month supply"
-                }
-            }
-        },
-        "curcumin": {
-            "name": "Curcumin (Turmeric Extract)",
-            "benefits": "Anti-inflammatory, antioxidant, joint health, cognitive support",
-            "recommended_for": {
-                "age_groups": ["30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["joint_pain", "inflammation", "cognitive_function", "longevity"]
-            },
-            "dosage": {
-                "30s": "500-1000 mg daily",
-                "40s": "500-1000 mg daily",
-                "50s": "500-1500 mg daily",
-                "60s": "500-1500 mg daily",
-                "70plus": "500-1500 mg daily"
-            },
-            "contraindications": ["gallbladder_disease", "bleeding_disorders"],
-            "interactions": ["blood_thinners", "diabetes_medication"],
-            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5664031/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Standard curcumin extract",
-                    "price_range": "$10-20 for 1-month supply"
-                },
-                "good": {
-                    "form": "Curcumin with piperine (black pepper extract)",
-                    "price_range": "$20-35 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "High-bioavailability formulations (liposomal, phytosomal, or BCM-95)",
-                    "price_range": "$35-60 for 1-month supply"
-                }
-            }
-        },
-        "vitamin_a": {
-            "name": "Vitamin A",
-            "benefits": "Vision health, immune function, skin health, cell growth",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["eye_health", "immune_support", "skin_health"]
-            },
-            "dosage": {
-                "20s": "700-900 mcg RAE daily",
-                "30s": "700-900 mcg RAE daily",
-                "40s": "700-900 mcg RAE daily",
-                "50s": "700-900 mcg RAE daily",
-                "60s": "700-900 mcg RAE daily",
-                "70plus": "700-900 mcg RAE daily"
-            },
-            "contraindications": ["pregnancy", "liver_disease"],
-            "interactions": ["retinoid_medications", "certain_cholesterol_drugs"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminA-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Beta-carotene (provitamin A)",
-                    "price_range": "$5-10 for 3-month supply"
-                },
-                "good": {
