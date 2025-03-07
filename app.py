@@ -2,217 +2,21 @@ import streamlit as st
 import pandas as pd
 
 # ======== DATA STRUCTURES ========
+# At the top of your app.py file
+from supplement_data import get_supplement_data, get_interactions_data, get_age_health_concerns
 
+
+# At the top of your app.py file
+from supplement_data import get_supplement_data, get_interactions_data, get_age_health_concerns
+
+# Then replace your load_data function with this:
 def load_data():
-    """Load supplement data structures"""
-    # Simplified supplement data
-    supplements_data = {
-        "vitamin_d": {
-            "name": "Vitamin D",
-            "benefits": "Bone health, immune function, mood regulation",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["bone_health", "immune_support", "depression", "longevity"]
-            },
-            "dosage": {
-                "20s": "1000-2000 IU daily",
-                "30s": "1000-2000 IU daily",
-                "40s": "1000-2000 IU daily",
-                "50s": "1000-4000 IU daily",
-                "60s": "1000-4000 IU daily",
-                "70plus": "2000-4000 IU daily"
-            },
-            "contraindications": ["hypercalcemia", "kidney_disease"],
-            "interactions": ["steroids", "weight_loss_drugs", "cholesterol_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "D3 tablets",
-                    "price_range": "$5-15 for 3-month supply"
-                },
-                "good": {
-                    "form": "D3 + K2 combination",
-                    "price_range": "$15-25 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Liposomal D3 + K2 with organic oils",
-                    "price_range": "$25-40 for 3-month supply"
-                }
-            }
-        },
-        "magnesium": {
-            "name": "Magnesium",
-            "benefits": "Muscle function, nerve function, energy production, sleep quality",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["muscle_cramps", "sleep_issues", "stress", "heart_health", "longevity"]
-            },
-            "dosage": {
-                "20s": "310-400 mg daily",
-                "30s": "310-420 mg daily",
-                "40s": "320-420 mg daily",
-                "50s": "320-420 mg daily",
-                "60s": "320-420 mg daily",
-                "70plus": "320-420 mg daily"
-            },
-            "contraindications": ["kidney_failure"],
-            "interactions": ["antibiotics", "diuretics", "heart_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Magnesium oxide",
-                    "price_range": "$5-10 for 2-month supply",
-                    "note": "Less bioavailable but affordable"
-                },
-                "good": {
-                    "form": "Magnesium citrate or glycinate",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Magnesium threonate or glycinate complex with B6",
-                    "price_range": "$30-45 for 2-month supply"
-                }
-            }
-        },
-        "omega_3": {
-            "name": "Omega-3 Fatty Acids",
-            "benefits": "Heart health, brain function, anti-inflammatory, joint support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["heart_health", "joint_pain", "cognitive_function", "depression", "longevity"]
-            },
-            "dosage": {
-                "20s": "1000-2000 mg daily",
-                "30s": "1000-2000 mg daily",
-                "40s": "1000-3000 mg daily",
-                "50s": "1000-3000 mg daily",
-                "60s": "1000-3000 mg daily",
-                "70plus": "1000-3000 mg daily"
-            },
-            "contraindications": ["bleeding_disorders"],
-            "interactions": ["blood_thinners", "high_blood_pressure_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Fish oil capsules",
-                    "price_range": "$10-20 for 2-month supply"
-                },
-                "good": {
-                    "form": "Concentrated fish oil (higher EPA/DHA)",
-                    "price_range": "$20-35 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Triglyceride-form fish oil or algae-based (vegetarian)",
-                    "price_range": "$35-60 for 2-month supply"
-                }
-            }
-        },
-        "vitamin_b12": {
-            "name": "Vitamin B12",
-            "benefits": "Nerve function, red blood cell formation, DNA synthesis, energy metabolism",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["fatigue", "vegetarian_vegan", "anemia", "cognitive_function"]
-            },
-            "dosage": {
-                "20s": "2.4 mcg daily",
-                "30s": "2.4 mcg daily",
-                "40s": "2.4 mcg daily",
-                "50s": "2.4 mcg daily",
-                "60s": "2.4-1000 mcg daily",
-                "70plus": "2.4-1000 mcg daily (higher doses for absorption issues)"
-            },
-            "contraindications": [],
-            "interactions": ["metformin", "acid_reducers"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Cyanocobalamin tablets/capsules",
-                    "price_range": "$5-10 for 4-month supply"
-                },
-                "good": {
-                    "form": "Methylcobalamin tablets",
-                    "price_range": "$10-20 for 3-month supply"
-                },
-                "ideal": {
-                    "form": "Sublingual methylcobalamin with intrinsic factor",
-                    "price_range": "$20-35 for 3-month supply"
-                }
-            }
-        },
-        "taurine": {
-            "name": "Taurine",
-            "benefits": "Heart health, exercise performance, antioxidant, cognitive function",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["heart_health", "fitness_performance", "cognitive_function", "longevity"]
-            },
-            "dosage": {
-                "20s": "500-2000 mg daily",
-                "30s": "500-2000 mg daily",
-                "40s": "500-3000 mg daily",
-                "50s": "500-3000 mg daily",
-                "60s": "500-3000 mg daily",
-                "70plus": "500-3000 mg daily"
-            },
-            "contraindications": [],
-            "interactions": ["lithium"],
-            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5933890/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Taurine powder",
-                    "price_range": "$10-15 for 2-month supply"
-                },
-                "good": {
-                    "form": "Taurine capsules",
-                    "price_range": "$15-25 for 2-month supply"
-                },
-                "ideal": {
-                    "form": "Pharmaceutical-grade taurine with increased bioavailability",
-                    "price_range": "$25-40 for 2-month supply"
-                }
-            }
-        },
-        "choline": {
-            "name": "Choline",
-            "benefits": "Brain health, liver function, metabolism, nervous system support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["cognitive_function", "liver_health", "fitness_performance"]
-            },
-            "dosage": {
-                "20s": "425-550 mg daily",
-                "30s": "425-550 mg daily",
-                "40s": "425-550 mg daily",
-                "50s": "425-550 mg daily",
-                "60s": "425-550 mg daily",
-                "70plus": "425-550 mg daily"
-            },
-            "contraindications": ["trimethylaminuria"],
-            "interactions": [],
-            "sources": ["https://ods.od.nih.gov/factsheets/Choline-HealthProfessional/"],
-            "budget_tier": {
-                "essential": {
-                    "form": "Choline bitartrate",
-                    "price_range": "$10-20 for 2-month supply"
-                },
-                "good": {
-                    "form": "Alpha-GPC or CDP-choline",
-                    "price_range": "$25-40 for 1-month supply"
-                },
-                "ideal": {
-                    "form": "Combination of Alpha-GPC and CDP-choline",
-                    "price_range": "$40-60 for 1-month supply"
-                }
-            }
-        }
-    }
+    """Load supplement data from the separate module"""
+    supplements_data = get_supplement_data()
+    interactions_data = get_interactions_data()
+    age_health_concerns = get_age_health_concerns()
+    
+    return supplements_data, interactions_data, age_health_concerns
     
     # Interactions data
     interactions_data = {
@@ -330,6 +134,31 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
         "respiratory_issues": "Respiratory Issues",
         "liver_health": "Liver Health",
         "longevity": "Longevity/Anti-Aging"
+        "eye_health": "Eye Health",
+        "nerve_health": "Nerve Health",
+        "adrenal_support": "Adrenal Support",
+        "detoxification_support": "Detoxification Support",
+        "hair_health": "Hair Health",
+        "nail_health": "Nail Health",
+        "wound_healing": "Wound Healing",
+        "muscle_loss_prevention": "Muscle Loss Prevention",
+        "antibiotic_recovery": "Recovery from Antibiotics",
+        "blood_pressure": "Blood Pressure Management",
+        "menopause_symptoms": "Menopause Symptoms",
+        "circulation": "Circulation",
+        "tinnitus": "Tinnitus",
+        "migraine_prevention": "Migraine Prevention",
+        "memory_support": "Memory Support",
+        "weight_management": "Weight Management",
+        "exercise_recovery": "Exercise Recovery",
+        "allergies": "Allergies",
+        "jet_lag": "Jet Lag",
+        "shift_work": "Shift Work Support",
+        "herpes_management": "Herpes Management",
+        "cholesterol_management": "Cholesterol Management",
+        "pms_symptoms": "PMS Symptoms",
+        "mood_support": "Mood Support"
+
     }
     
     # Convert technical terms to readable format for display
