@@ -5,10 +5,6 @@ import pandas as pd
 # At the top of your app.py file
 from supplement_data import get_supplement_data, get_interactions_data, get_age_health_concerns
 
-
-# At the top of your app.py file
-from supplement_data import get_supplement_data, get_interactions_data, get_age_health_concerns
-
 # Then replace your load_data function with this:
 def load_data():
     """Load supplement data from the separate module"""
