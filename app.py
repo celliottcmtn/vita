@@ -229,7 +229,7 @@ def get_priority_for_user(supplement_id, age_group, gender, supplement_prioritie
     """Get the priority rating for a supplement based on user demographics"""
     
     if supplement_id not in supplement_priorities:
-        return 0  # Not prioritized
+        return 1  # Minimum priority of 1 for all supplements
         
     priority_data = supplement_priorities[supplement_id]
     
@@ -247,8 +247,8 @@ def get_priority_for_user(supplement_id, age_group, gender, supplement_prioritie
                 # For now, we'll skip these unless we add UI elements for them
                 pass
     
-    # Otherwise return default priority
-    return priority_data.get("default", 0)
+    # Return default priority with a minimum of 1
+    return max(priority_data.get("default", 1), 1)
 
 def display_priority_rating(priority):
     """Create a visual representation of the priority rating"""
@@ -523,16 +523,15 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
             st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
             st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
             
-            # Display priority explanation if available
-            if priority > 0:
-                priority_text = {
-                    1: "May provide minor benefits for some individuals",
-                    2: "Generally beneficial for wellness",
-                    3: "Important for most people",
-                    4: "Very important, especially for your demographic",
-                    5: "Essential for optimal health in your demographic"
-                }
-                st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
+            # Display priority explanation for all supplements
+            priority_text = {
+                1: "May provide minor benefits for some individuals",
+                2: "Generally beneficial for wellness",
+                3: "Important for most people",
+                4: "Very important, especially for your demographic",
+                5: "Essential for optimal health in your demographic"
+            }
+            st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
             
             # Interaction warnings
             if supp_id in interactions:
