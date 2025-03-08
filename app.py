@@ -1,158 +1,16 @@
 import streamlit as st
 import pandas as pd
+from supplement_data import get_supplement_data, get_interactions_data, get_age_health_concerns
 
-# Define a simple set of supplements
-def get_supplement_data():
-    supplements_data = {
-        "vitamin_d": {
-            "name": "Vitamin D",
-            "benefits": "Bone health, immune function, mood regulation",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["bone_health", "immune_support", "depression", "longevity"]
-            },
-            "dosage": {
-                "20s": "1000-2000 IU daily",
-                "30s": "1000-2000 IU daily",
-                "40s": "1000-2000 IU daily",
-                "50s": "1000-4000 IU daily",
-                "60s": "1000-4000 IU daily",
-                "70plus": "2000-4000 IU daily"
-            },
-            "contraindications": ["hypercalcemia", "kidney_disease"],
-            "interactions": ["steroids", "weight_loss_drugs", "cholesterol_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/"]
-        },
-        "magnesium": {
-            "name": "Magnesium",
-            "benefits": "Muscle function, nerve function, energy production, sleep quality",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["muscle_cramps", "sleep_issues", "stress", "heart_health", "longevity"]
-            },
-            "dosage": {
-                "20s": "310-400 mg daily",
-                "30s": "310-420 mg daily",
-                "40s": "320-420 mg daily",
-                "50s": "320-420 mg daily",
-                "60s": "320-420 mg daily",
-                "70plus": "320-420 mg daily"
-            },
-            "contraindications": ["kidney_failure"],
-            "interactions": ["antibiotics", "diuretics", "heart_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/"]
-        },
-        "omega_3": {
-            "name": "Omega-3 Fatty Acids",
-            "benefits": "Heart health, brain function, anti-inflammatory, joint support",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["heart_health", "joint_pain", "cognitive_function", "depression", "longevity"]
-            },
-            "dosage": {
-                "20s": "1000-2000 mg daily",
-                "30s": "1000-2000 mg daily",
-                "40s": "1000-3000 mg daily",
-                "50s": "1000-3000 mg daily",
-                "60s": "1000-3000 mg daily",
-                "70plus": "1000-3000 mg daily"
-            },
-            "contraindications": ["bleeding_disorders"],
-            "interactions": ["blood_thinners", "high_blood_pressure_medication"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/"]
-        },
-        "vitamin_c": {
-            "name": "Vitamin C",
-            "benefits": "Immune support, antioxidant, collagen production, iron absorption",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["immune_support", "skin_health", "iron_deficiency", "longevity"]
-            },
-            "dosage": {
-                "20s": "75-90 mg daily",
-                "30s": "75-90 mg daily",
-                "40s": "75-90 mg daily",
-                "50s": "75-90 mg daily",
-                "60s": "75-90 mg daily",
-                "70plus": "75-90 mg daily (up to 500-1000 mg for immune support)"
-            },
-            "contraindications": ["history_of_kidney_stones"],
-            "interactions": ["blood_thinners", "statins", "chemotherapy"],
-            "sources": ["https://ods.od.nih.gov/factsheets/VitaminC-HealthProfessional/"]
-        },
-        "zinc": {
-            "name": "Zinc",
-            "benefits": "Immune function, wound healing, DNA synthesis, taste and smell",
-            "recommended_for": {
-                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
-                "genders": ["male", "female", "prefer_not_to_say"],
-                "health_concerns": ["immune_support", "skin_health", "reproductive_health", "wound_healing"]
-            },
-            "dosage": {
-                "20s": "8-11 mg daily",
-                "30s": "8-11 mg daily",
-                "40s": "8-11 mg daily",
-                "50s": "8-11 mg daily",
-                "60s": "8-11 mg daily",
-                "70plus": "8-11 mg daily"
-            },
-            "contraindications": ["excessive_supplementation"],
-            "interactions": ["antibiotics", "penicillamine", "copper_supplements", "iron_supplements"],
-            "sources": ["https://ods.od.nih.gov/factsheets/Zinc-HealthProfessional/"]
-        }
-    }
-    return supplements_data
+# Set page configuration
+st.set_page_config(
+    page_title="Supplement Advisor",
+    page_icon="💊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-def get_interactions_data():
-    interactions_data = {
-        "calcium": ["iron", "zinc", "magnesium"],
-        "iron": ["calcium", "zinc"],
-        "zinc": ["calcium", "iron", "copper"],
-        "magnesium": ["calcium"],
-        "vitamin_c": ["b12"],
-        "vitamin_e": ["vitamin_k"]
-    }
-    return interactions_data
-
-def get_age_health_concerns():
-    age_health_concerns = {
-        "20s": {
-            "male": ["immune_support", "fitness_performance", "stress"],
-            "female": ["immune_support", "iron_deficiency", "stress"],
-            "prefer_not_to_say": ["immune_support", "stress", "fitness_performance"]
-        },
-        "30s": {
-            "male": ["energy_levels", "stress", "immune_support"],
-            "female": ["energy_levels", "stress", "iron_deficiency"],
-            "prefer_not_to_say": ["energy_levels", "stress", "immune_support"]
-        },
-        "40s": {
-            "male": ["heart_health", "energy_levels", "longevity"],
-            "female": ["bone_health", "energy_levels", "longevity"],
-            "prefer_not_to_say": ["heart_health", "energy_levels", "longevity"]
-        },
-        "50s": {
-            "male": ["heart_health", "joint_pain", "longevity"],
-            "female": ["bone_health", "heart_health", "longevity"],
-            "prefer_not_to_say": ["heart_health", "joint_pain", "longevity"]
-        },
-        "60s": {
-            "male": ["heart_health", "cognitive_function", "longevity"],
-            "female": ["bone_health", "heart_health", "longevity"],
-            "prefer_not_to_say": ["heart_health", "cognitive_function", "longevity"]
-        },
-        "70plus": {
-            "male": ["heart_health", "cognitive_function", "longevity"],
-            "female": ["bone_health", "heart_health", "longevity"],
-            "prefer_not_to_say": ["heart_health", "cognitive_function", "longevity"]
-        }
-    }
-    return age_health_concerns
-
+# Load Data
 def load_data():
     supplements_data = get_supplement_data()
     interactions_data = get_interactions_data()
@@ -217,7 +75,20 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
         "reproductive_health": "Reproductive Health",
         "energy_levels": "Energy Levels",
         "fitness_performance": "Fitness Performance",
-        "wound_healing": "Wound Healing"
+        "wound_healing": "Wound Healing",
+        "digestive_issues": "Digestive Issues",
+        "antibiotic_recovery": "Antibiotic Recovery",
+        "vegetarian_vegan": "Vegetarian/Vegan Diet",
+        "anemia": "Anemia",
+        "heavy_periods": "Heavy Periods",
+        "eye_health": "Eye Health",
+        "alcoholism_recovery": "Alcoholism Recovery",
+        "nerve_health": "Nerve Health",
+        "muscle_function": "Muscle Function",
+        "inflammation": "Inflammation",
+        "prostate_health": "Prostate Health",
+        "hormone_balance": "Hormone Balance",
+        "weight_management": "Weight Management"
     }
     
     # Convert technical terms to readable format for display
@@ -321,43 +192,6 @@ def check_interactions(recommendations, interactions_data, medications):
     
     return potential_interactions
 
-def display_recommendations(recommendations, interactions, age_group):
-    st.header("Your Personalized Supplement Recommendations")
-    
-    if not recommendations:
-        st.warning("No specific supplements recommended based on your selections.")
-        return
-    
-    # Create expandable sections for each recommendation
-    for supp_id, rec_data in recommendations.items():
-        supplement = rec_data["supplement"]
-        matching_concerns = rec_data["matching_concerns"]
-        
-        # Format concerns for display
-        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
-        
-        with st.expander(f"**{supplement['name']}**"):
-            # Main information
-            st.markdown(f"**Benefits**: {supplement['benefits']}")
-            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
-            st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
-            
-            # Interaction warnings
-            if supp_id in interactions:
-                st.markdown("### ⚠️ Potential Interactions")
-                for interaction in interactions[supp_id]:
-                    st.markdown(f"- **{interaction['name']}**: {interaction['note']}")
-            
-            # Contraindications
-            if supplement.get("contraindications"):
-                contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
-                st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
-            
-            # Sources
-            st.markdown("### Sources")
-            for source in supplement.get("sources", []):
-                st.markdown(f"- [{source}]({source})")
-
 def display_timing_guide(recommendations):
     st.header("Supplement Timing Guide")
     
@@ -381,7 +215,7 @@ def display_timing_guide(recommendations):
         
         if name in ["Iron"]:
             timing_categories["morning_empty_stomach"].append(name)
-        elif name in ["Vitamin D", "Vitamin B12", "Omega-3 Fatty Acids"]:
+        elif name in ["Vitamin D", "Vitamin B12", "Omega-3 Fatty Acids", "Vitamin B1 (Thiamine)", "Vitamin A"]:
             timing_categories["morning_with_food"].append(name)
         elif name in ["Probiotics"]:
             timing_categories["morning_empty_stomach"].append(name)
@@ -459,6 +293,14 @@ def create_supplement_plan(recommendations, interactions, age_group):
         
         plan_text += f"### {supplement['name']}\n"
         plan_text += f"- **Dosage:** {supplement['dosage'].get(age_group, 'Consult healthcare provider')}\n"
+        plan_text += f"- **Benefits:** {supplement['benefits']}\n"
+        
+        # Add budget recommendation
+        if "budget_tier" in supplement:
+            good_option = supplement["budget_tier"].get("good", {})
+            if good_option:
+                plan_text += f"- **Recommended form:** {good_option.get('form', 'Standard form')}\n"
+                plan_text += f"- **Typical price:** {good_option.get('price_range', 'Varies')}\n"
         
         if supp_id in interactions and interactions[supp_id]:
             plan_text += "- **Special Considerations:**\n"
@@ -491,45 +333,67 @@ This supplement plan is provided for informational purposes only and is not a su
         mime="text/plain"
     )
 
-# ======== MAIN APPLICATION ========
-
-def main():
-    # Load data
-    supplements_data, interactions_data, age_health_concerns = load_data()
+def display_recommendations(recommendations, interactions, age_group):
+    st.header("Your Personalized Supplement Recommendations")
     
-    # Display header and get user information
-    display_header()
-    age_group, gender = get_user_info()
+    if not recommendations:
+        st.warning("No specific supplements recommended based on your selections.")
+        return
     
-    # Get health concerns based on age and gender
-    health_concerns, medications = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
-    
-    # Generate recommendations button
-    if st.button("Generate Recommendations"):
-        if not health_concerns:
-            st.warning("Please select at least one health concern for personalized recommendations.")
-        else:
-            # Get recommendations based on user input
-            recommendations = get_recommended_supplements(supplements_data, age_group, gender, health_concerns)
+    # Create expandable sections for each recommendation
+    for supp_id, rec_data in recommendations.items():
+        supplement = rec_data["supplement"]
+        matching_concerns = rec_data["matching_concerns"]
+        
+        # Format concerns for display
+        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
+        
+        with st.expander(f"**{supplement['name']}**"):
+            # Main information
+            st.markdown(f"**Benefits**: {supplement['benefits']}")
+            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
+            st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
             
-            # Check for potential interactions
-            interactions = check_interactions(recommendations, interactions_data, medications)
+            # Interaction warnings
+            if supp_id in interactions:
+                st.markdown("### ⚠️ Potential Interactions")
+                for interaction in interactions[supp_id]:
+                    st.markdown(f"- **{interaction['name']}**: {interaction['note']}")
             
-            # Display recommendations
-            display_recommendations(recommendations, interactions, age_group)
+            # Contraindications
+            if supplement.get("contraindications"):
+                contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
+                st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
             
-            # Display timing guide
-            display_timing_guide(recommendations)
-            
-            # Create and offer downloadable plan
-            create_supplement_plan(recommendations, interactions, age_group)
-    
-    # Footer
-    st.markdown("---")
-    st.markdown("""
-    **Disclaimer:** This application provides general information and is not a substitute for professional medical advice. 
-    All recommendations should be reviewed with a healthcare provider before implementation.
-    """)
-
-if __name__ == "__main__":
-    main()
+            # Display budget tiers if available
+            if "budget_tier" in supplement:
+                st.markdown("### Budget-Friendly Options")
+                
+                essential = supplement["budget_tier"].get("essential", {})
+                good = supplement["budget_tier"].get("good", {})
+                ideal = supplement["budget_tier"].get("ideal", {})
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("**Essential**")
+                    if essential:
+                        st.markdown(f"Form: {essential.get('form', 'N/A')}")
+                        st.markdown(f"Price: {essential.get('price_range', 'N/A')}")
+                
+                with col2:
+                    st.markdown("**Good Value**")
+                    if good:
+                        st.markdown(f"Form: {good.get('form', 'N/A')}")
+                        st.markdown(f"Price: {good.get('price_range', 'N/A')}")
+                
+                with col3:
+                    st.markdown("**Ideal Choice**")
+                    if ideal:
+                        st.markdown(f"Form: {ideal.get('form', 'N/A')}")
+                        st.markdown(f"Price: {ideal.get('price_range', 'N/A')}")
+                        
+            # Sources
+            st.markdown("### Sources")
+            for source in supplement.get("sources", []):
+                st.markdown(f"- [{source}]({source})")
