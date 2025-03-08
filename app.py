@@ -295,12 +295,12 @@ def create_supplement_plan(recommendations, interactions, age_group):
         plan_text += f"- **Dosage:** {supplement['dosage'].get(age_group, 'Consult healthcare provider')}\n"
         plan_text += f"- **Benefits:** {supplement['benefits']}\n"
         
-        # Add budget recommendation
-        if "budget_tier" in supplement:
-            good_option = supplement["budget_tier"].get("good", {})
+        # Add importance recommendation
+        if "importance_tier" in supplement:
+            good_option = supplement["importance_tier"].get("good", {})
             if good_option:
                 plan_text += f"- **Recommended form:** {good_option.get('form', 'Standard form')}\n"
-                plan_text += f"- **Typical price:** {good_option.get('price_range', 'Varies')}\n"
+                plan_text += f"- **Note:** {good_option.get('note', 'Standard form')}\n"
         
         if supp_id in interactions and interactions[supp_id]:
             plan_text += "- **Special Considerations:**\n"
@@ -351,7 +351,25 @@ def display_recommendations(recommendations, interactions, age_group):
         with st.expander(f"**{supplement['name']}**"):
             # Main information
             st.markdown(f"**Benefits**: {supplement['benefits']}")
-                            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
+            def display_recommendations(recommendations, interactions, age_group):
+    st.header("Your Personalized Supplement Recommendations")
+    
+    if not recommendations:
+        st.warning("No specific supplements recommended based on your selections.")
+        return
+    
+    # Create expandable sections for each recommendation
+    for supp_id, rec_data in recommendations.items():
+        supplement = rec_data["supplement"]
+        matching_concerns = rec_data["matching_concerns"]
+        
+        # Format concerns for display
+        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
+        
+        with st.expander(f"**{supplement['name']}**"):
+            # Main information
+            st.markdown(f"**Benefits**: {supplement['benefits']}")
+            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
             st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
             
             # Interaction warnings
