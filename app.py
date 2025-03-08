@@ -192,6 +192,71 @@ def check_interactions(recommendations, interactions_data, medications):
     
     return potential_interactions
 
+def display_recommendations(recommendations, interactions, age_group):
+    st.header("Your Personalized Supplement Recommendations")
+    
+    if not recommendations:
+        st.warning("No specific supplements recommended based on your selections.")
+        return
+    
+    # Create expandable sections for each recommendation
+    for supp_id, rec_data in recommendations.items():
+        supplement = rec_data["supplement"]
+        matching_concerns = rec_data["matching_concerns"]
+        
+        # Format concerns for display
+        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
+        
+        with st.expander(f"**{supplement['name']}**"):
+            # Main information
+            st.markdown(f"**Benefits**: {supplement['benefits']}")
+            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
+            st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
+            
+            # Interaction warnings
+            if supp_id in interactions:
+                st.markdown("### ⚠️ Potential Interactions")
+                for interaction in interactions[supp_id]:
+                    st.markdown(f"- **{interaction['name']}**: {interaction['note']}")
+            
+            # Contraindications
+            if supplement.get("contraindications"):
+                contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
+                st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
+            
+            # Display importance tiers if available
+            if "importance_tier" in supplement:
+                st.markdown("### Recommended Forms")
+                
+                essential = supplement["importance_tier"].get("essential", {})
+                good = supplement["importance_tier"].get("good", {})
+                ideal = supplement["importance_tier"].get("ideal", {})
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("**Essential**")
+                    if essential:
+                        st.markdown(f"Form: {essential.get('form', 'N/A')}")
+                        st.markdown(f"Note: {essential.get('note', 'N/A')}")
+                
+                with col2:
+                    st.markdown("**Good Value**")
+                    if good:
+                        st.markdown(f"Form: {good.get('form', 'N/A')}")
+                        st.markdown(f"Note: {good.get('note', 'N/A')}")
+                
+                with col3:
+                    st.markdown("**Ideal Choice**")
+                    if ideal:
+                        st.markdown(f"Form: {ideal.get('form', 'N/A')}")
+                        st.markdown(f"Note: {ideal.get('note', 'N/A')}")
+                        
+            # Sources
+            st.markdown("### Sources")
+            for source in supplement.get("sources", []):
+                st.markdown(f"- [{source}]({source})")
+
 def display_timing_guide(recommendations):
     st.header("Supplement Timing Guide")
     
@@ -333,105 +398,126 @@ This supplement plan is provided for informational purposes only and is not a su
         mime="text/plain"
     )
 
-def display_recommendations(recommendations, interactions, age_group):
-    st.header("Your Personalized Supplement Recommendations")
+# ======== MAIN APPLICATION ========
+
+def main():
+    # Load data
+    supplements_data, interactions_data, age_health_concerns = load_data()
     
-    if not recommendations:
-        st.warning("No specific supplements recommended based on your selections.")
-        return
+    # Add a sidebar for navigation
+    with st.sidebar:
+        st.title("Navigation")
+        page = st.radio(
+            "Go to",
+            ["Home & Recommendations", "Supplement Reference", "About"]
+        )
     
-    # Create expandable sections for each recommendation
-    for supp_id, rec_data in recommendations.items():
-        supplement = rec_data["supplement"]
-        matching_concerns = rec_data["matching_concerns"]
+    # Route to different pages based on sidebar selection
+    if page == "Home & Recommendations":
+        # Display header and get user information
+        display_header()
+        age_group, gender = get_user_info()
         
-        # Format concerns for display
-        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
+        # Get health concerns based on age and gender
+        health_concerns, medications = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
         
-        with st.expander(f"**{supplement['name']}**"):
-            # Main information
-            st.markdown(f"**Benefits**: {supplement['benefits']}")
-            def display_recommendations(recommendations, interactions, age_group):
-    st.header("Your Personalized Supplement Recommendations")
+        # Generate recommendations button
+        if st.button("Generate Recommendations"):
+            if not health_concerns:
+                st.warning("Please select at least one health concern for personalized recommendations.")
+            else:
+                # Get recommendations based on user input
+                recommendations = get_recommended_supplements(supplements_data, age_group, gender, health_concerns)
+                
+                # Check for potential interactions
+                interactions = check_interactions(recommendations, interactions_data, medications)
+                
+                # Display recommendations
+                display_recommendations(recommendations, interactions, age_group)
+                
+                # Display timing guide
+                display_timing_guide(recommendations)
+                
+                # Create and offer downloadable plan
+                create_supplement_plan(recommendations, interactions, age_group)
     
-    if not recommendations:
-        st.warning("No specific supplements recommended based on your selections.")
-        return
-    
-    # Create expandable sections for each recommendation
-    for supp_id, rec_data in recommendations.items():
-        supplement = rec_data["supplement"]
-        matching_concerns = rec_data["matching_concerns"]
+    elif page == "Supplement Reference":
+        st.title("Supplement Reference Guide")
+        st.write("Search for detailed information about specific supplements.")
         
-        # Format concerns for display
-        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
+        # Get all supplement names for the dropdown
+        all_supplements = [(supp_id, data["name"]) for supp_id, data in supplements_data.items()]
+        all_supplements.sort(key=lambda x: x[1])  # Sort by name
         
-        with st.expander(f"**{supplement['name']}**"):
-            # Main information
-            st.markdown(f"**Benefits**: {supplement['benefits']}")
-            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
-            st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
+        selected_supplement = st.selectbox(
+            "Select a supplement to learn more:",
+            options=[s[0] for s in all_supplements],
+            format_func=lambda x: next((s[1] for s in all_supplements if s[0] == x), x)
+        )
+        
+        if selected_supplement:
+            supp_data = supplements_data[selected_supplement]
             
-            # Interaction warnings
-            if supp_id in interactions:
-                st.markdown("### ⚠️ Potential Interactions")
-                for interaction in interactions[supp_id]:
-                    st.markdown(f"- **{interaction['name']}**: {interaction['note']}")
+            st.subheader(supp_data["name"])
+            st.write(f"**Benefits:** {supp_data['benefits']}")
             
-            # Contraindications
-            if supplement.get("contraindications"):
-                contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
-                st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
+            # Display age-specific dosages
+            st.write("**Recommended Dosages by Age:**")
+            dosage_data = []
+            for age, dose in supp_data["dosage"].items():
+                dosage_data.append({"Age Group": age, "Recommended Dosage": dose})
             
-            # Display importance tiers if available
-            if "importance_tier" in supplement:
-                st.markdown("### Recommended Forms")
-                
-                essential = supplement["importance_tier"].get("essential", {})
-                good = supplement["importance_tier"].get("good", {})
-                ideal = supplement["importance_tier"].get("ideal", {})
-                
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    st.markdown("**Essential**")
-                    if essential:
-                        st.markdown(f"Form: {essential.get('form', 'N/A')}")
-                        st.markdown(f"Note: {essential.get('note', 'N/A')}")
-                
-                with col2:
-                    st.markdown("**Good Value**")
-                    if good:
-                        st.markdown(f"Form: {good.get('form', 'N/A')}")
-                        st.markdown(f"Note: {good.get('note', 'N/A')}")
-                
-                with col3:
-                    st.markdown("**Ideal Choice**")
-                    if ideal:
-                        st.markdown(f"Form: {ideal.get('form', 'N/A')}")
-                        st.markdown(f"Note: {ideal.get('note', 'N/A')}")
-                        
-            # Sources
-            st.markdown("### Sources")
-            for source in supplement.get("sources", []):
-                st.markdown(f"- [{source}]({source})")
-                    if essential:
-                        st.markdown(f"Form: {essential.get('form', 'N/A')}")
-                        st.markdown(f"Price: {essential.get('price_range', 'N/A')}")
-                
-                with col2:
-                    st.markdown("**Good Value**")
-                    if good:
-                        st.markdown(f"Form: {good.get('form', 'N/A')}")
-                        st.markdown(f"Price: {good.get('price_range', 'N/A')}")
-                
-                with col3:
-                    st.markdown("**Ideal Choice**")
-                    if ideal:
-                        st.markdown(f"Form: {ideal.get('form', 'N/A')}")
-                        st.markdown(f"Price: {ideal.get('price_range', 'N/A')}")
-                        
-            # Sources
-            st.markdown("### Sources")
-            for source in supplement.get("sources", []):
-                st.markdown(f"- [{source}]({source})")
+            st.table(pd.DataFrame(dosage_data))
+            
+            # Display contraindications
+            if supp_data.get("contraindications"):
+                st.write("**Contraindications:**")
+                for contra in supp_data["contraindications"]:
+                    st.write(f"- {contra.replace('_', ' ').title()}")
+            
+            # Display interactions
+            if supp_data.get("interactions"):
+                st.write("**Potential Interactions:**")
+                for interact in supp_data["interactions"]:
+                    st.write(f"- {interact.replace('_', ' ').title()}")
+                    
+            # Display sources
+            if supp_data.get("sources"):
+                st.write("**Sources:**")
+                for source in supp_data["sources"]:
+                    st.markdown(f"- [{source}]({source})")
+    
+    elif page == "About":
+        st.title("About This App")
+        st.write("""
+        ## Personalized Supplement Advisor
+        
+        This application provides personalized supplement recommendations based on your age, gender, and health concerns.
+        
+        ### How It Works
+        
+        1. The app collects basic information about you (age, gender, health concerns)
+        2. Based on scientific research, it suggests supplements that may benefit your specific profile
+        3. The app checks for potential interactions between supplements and with your medications
+        4. A timing guide helps you determine when to take each supplement for optimal effectiveness
+        
+        ### Data Sources
+        
+        The recommendations in this application are based on peer-reviewed research and guidelines from reputable health organizations.
+        Each supplement entry includes links to scientific sources.
+        
+        ### Disclaimer
+        
+        This tool provides general information only and is not a substitute for professional medical advice.
+        Always consult with a healthcare provider before starting any supplement regimen.
+        """)
+
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+    **Disclaimer:** This application provides general information and is not a substitute for professional medical advice. 
+    All recommendations should be reviewed with a healthcare provider before implementation.
+    """)
+
+if __name__ == "__main__":
+    main()
