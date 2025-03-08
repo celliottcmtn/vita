@@ -351,7 +351,7 @@ def display_recommendations(recommendations, interactions, age_group):
         with st.expander(f"**{supplement['name']}**"):
             # Main information
             st.markdown(f"**Benefits**: {supplement['benefits']}")
-            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
+                            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
             st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
             
             # Interaction warnings
@@ -365,18 +365,38 @@ def display_recommendations(recommendations, interactions, age_group):
                 contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
                 st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
             
-            # Display budget tiers if available
-            if "budget_tier" in supplement:
-                st.markdown("### Budget-Friendly Options")
+            # Display importance tiers if available
+            if "importance_tier" in supplement:
+                st.markdown("### Recommended Forms")
                 
-                essential = supplement["budget_tier"].get("essential", {})
-                good = supplement["budget_tier"].get("good", {})
-                ideal = supplement["budget_tier"].get("ideal", {})
+                essential = supplement["importance_tier"].get("essential", {})
+                good = supplement["importance_tier"].get("good", {})
+                ideal = supplement["importance_tier"].get("ideal", {})
                 
                 col1, col2, col3 = st.columns(3)
                 
                 with col1:
                     st.markdown("**Essential**")
+                    if essential:
+                        st.markdown(f"Form: {essential.get('form', 'N/A')}")
+                        st.markdown(f"Note: {essential.get('note', 'N/A')}")
+                
+                with col2:
+                    st.markdown("**Good Value**")
+                    if good:
+                        st.markdown(f"Form: {good.get('form', 'N/A')}")
+                        st.markdown(f"Note: {good.get('note', 'N/A')}")
+                
+                with col3:
+                    st.markdown("**Ideal Choice**")
+                    if ideal:
+                        st.markdown(f"Form: {ideal.get('form', 'N/A')}")
+                        st.markdown(f"Note: {ideal.get('note', 'N/A')}")
+                        
+            # Sources
+            st.markdown("### Sources")
+            for source in supplement.get("sources", []):
+                st.markdown(f"- [{source}]({source})")
                     if essential:
                         st.markdown(f"Form: {essential.get('form', 'N/A')}")
                         st.markdown(f"Price: {essential.get('price_range', 'N/A')}")
