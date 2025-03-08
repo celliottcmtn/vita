@@ -817,6 +817,46 @@ def get_supplement_data():
             "interactions": ["diabetes_medications", "certain_antibiotics", "cholesterol_medications", "mineral_absorption"],
             "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705355/"]
         },
+        "taurine": {
+            "name": "Taurine",
+            "benefits": "Cardiovascular health, muscle function, antioxidant, energy production, neurological protection",
+            "recommended_for": {
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
+                "genders": ["male", "female", "prefer_not_to_say"],
+                "health_concerns": ["heart_health", "exercise_performance", "energy_levels", "cognitive_function", "eye_health", "diabetes_risk", "muscle_function"]
+            },
+            "dosage": {
+                "20s": "500-2000 mg daily",
+                "30s": "500-2000 mg daily",
+                "40s": "500-2000 mg daily",
+                "50s": "500-3000 mg daily",
+                "60s": "1000-3000 mg daily",
+                "70plus": "1000-3000 mg daily"
+            },
+            "contraindications": ["bipolar_disorder_medications"],
+            "interactions": ["certain_antipsychotics", "lithium", "certain_anticonvulsants"],
+            "sources": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8745570/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5933890/"]
+        },
+        "choline": {
+            "name": "Choline",
+            "benefits": "Brain development, cognitive function, liver health, metabolism, nerve function, muscle movement",
+            "recommended_for": {
+                "age_groups": ["20s", "30s", "40s", "50s", "60s", "70plus"],
+                "genders": ["male", "female", "prefer_not_to_say"],
+                "health_concerns": ["cognitive_function", "liver_health", "pregnancy_support", "nerve_health", "metabolic_health", "fatty_liver_disease", "muscle_recovery"]
+            },
+            "dosage": {
+                "20s": "425-550 mg daily",
+                "30s": "425-550 mg daily",
+                "40s": "425-550 mg daily",
+                "50s": "425-550 mg daily",
+                "60s": "425-550 mg daily",
+                "70plus": "425-550 mg daily"
+            },
+            "contraindications": ["trimethylaminuria", "atypical_odor_syndrome"],
+            "interactions": ["methotrexate", "certain_anticonvulsants", "estrogen_therapies"],
+            "sources": ["https://ods.od.nih.gov/factsheets/Choline-HealthProfessional/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6259980/"]
+        },
         "ashwagandha": {
             "name": "Ashwagandha",
             "benefits": "Stress reduction, thyroid support, muscle strength, cognitive function",
