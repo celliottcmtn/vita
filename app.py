@@ -88,7 +88,30 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
         "inflammation": "Inflammation",
         "prostate_health": "Prostate Health",
         "hormone_balance": "Hormone Balance",
-        "weight_management": "Weight Management"
+        "weight_management": "Weight Management",
+        "vision_support": "Vision Support",
+        "metabolic_health": "Metabolic Health",
+        "muscle_maintenance": "Muscle Maintenance",
+        "blood_sugar_balance": "Blood Sugar Balance",
+        "stress_management": "Stress Management",
+        "immune_function": "Immune Function",
+        "bone_density": "Bone Density",
+        "muscle_preservation": "Muscle Preservation",
+        "immune_resilience": "Immune Resilience",
+        "digestive_efficiency": "Digestive Efficiency",
+        "bladder_function": "Bladder Function",
+        "skin_elasticity": "Skin Elasticity",
+        "vision_health": "Vision Health",
+        "physical_mobility": "Physical Mobility",
+        "digestive_function": "Digestive Function",
+        "bladder_health": "Bladder Health",
+        "skin_integrity": "Skin Integrity",
+        "mental_clarity": "Mental Clarity",
+        "sleep_quality": "Sleep Quality",
+        "muscle_growth": "Muscle Growth",
+        "metabolism_support": "Metabolism Support",
+        "cardiovascular_health": "Cardiovascular Health",
+        "fertility": "Fertility Support"
     }
     
     # Convert technical terms to readable format for display
