@@ -15,7 +15,248 @@ def load_data():
     supplements_data = supplement_data.get_supplement_data()
     interactions_data = supplement_data.get_interactions_data()
     age_health_concerns = supplement_data.get_age_health_concerns()
-    return supplements_data, interactions_data, age_health_concerns
+    supplement_priorities = get_supplement_priorities()
+    return supplements_data, interactions_data, age_health_concerns, supplement_priorities
+
+# Priority Data
+def get_supplement_priorities():
+    """Return priority ratings (1-5) for supplements based on age group and gender
+    
+    Priority scale:
+    1 - May provide minor benefits for some individuals
+    2 - Generally beneficial for wellness
+    3 - Important for most people
+    4 - Very important, especially for specific demographics
+    5 - Essential for optimal health in target demographics
+    """
+    
+    supplement_priorities = {
+        # Essential Vitamins
+        "vitamin_a": {
+            "default": 3,
+            "age_gender_specific": {
+                "20s_female": 3,
+                "30s_female": 3,
+                "pregnant_female": 4
+            }
+        },
+        "vitamin_b1": {
+            "default": 2,
+            "age_gender_specific": {
+                "40s_male": 3,
+                "50s_male": 3,
+                "60s_male": 3
+            }
+        },
+        "vitamin_b2": {
+            "default": 2,
+            "age_gender_specific": {
+                "30s_female": 3,
+                "40s_female": 3
+            }
+        },
+        "vitamin_b3": {
+            "default": 3,
+            "age_gender_specific": {
+                "50s_male": 4,
+                "60s_male": 4
+            }
+        },
+        "vitamin_b5": {
+            "default": 2
+        },
+        "vitamin_b6": {
+            "default": 3,
+            "age_gender_specific": {
+                "20s_female": 4,
+                "30s_female": 4,
+                "40s_female": 4
+            }
+        },
+        "folate": {
+            "default": 3,
+            "age_gender_specific": {
+                "20s_female": 5,
+                "30s_female": 5,
+                "pregnant_female": 5
+            }
+        },
+        "vitamin_b12": {
+            "default": 4,
+            "age_gender_specific": {
+                "50s_male": 4,
+                "50s_female": 4,
+                "60s_male": 5,
+                "60s_female": 5,
+                "70plus_male": 5,
+                "70plus_female": 5
+            }
+        },
+        "biotin": {
+            "default": 2
+        },
+        "vitamin_c": {
+            "default": 4
+        },
+        "vitamin_d": {
+            "default": 5,
+            "age_gender_specific": {
+                "50s_female": 5,
+                "60s_female": 5,
+                "70plus_female": 5,
+                "50s_male": 5,
+                "60s_male": 5,
+                "70plus_male": 5
+            }
+        },
+        "vitamin_e": {
+            "default": 3
+        },
+        "vitamin_k": {
+            "default": 3,
+            "age_gender_specific": {
+                "50s_female": 4,
+                "60s_female": 4,
+                "70plus_female": 4
+            }
+        },
+        # Minerals
+        "calcium": {
+            "default": 3,
+            "age_gender_specific": {
+                "50s_female": 5,
+                "60s_female": 5,
+                "70plus_female": 5,
+                "70plus_male": 4
+            }
+        },
+        "magnesium": {
+            "default": 4,
+            "age_gender_specific": {
+                "40s_female": 5,
+                "50s_female": 5,
+                "60s_female": 5,
+                "70plus_female": 5,
+                "40s_male": 4,
+                "50s_male": 4,
+                "60s_male": 5,
+                "70plus_male": 5
+            }
+        },
+        "zinc": {
+            "default": 3,
+            "age_gender_specific": {
+                "50s_male": 4,
+                "60s_male": 4,
+                "70plus_male": 4
+            }
+        },
+        "iron": {
+            "default": 2,
+            "age_gender_specific": {
+                "20s_female": 4,
+                "30s_female": 4,
+                "40s_female": 4,
+                "vegetarian_female": 5,
+                "vegan_female": 5
+            }
+        },
+        # Fatty Acids
+        "omega_3": {
+            "default": 4,
+            "age_gender_specific": {
+                "50s_male": 5,
+                "60s_male": 5,
+                "70plus_male": 5,
+                "50s_female": 5,
+                "60s_female": 5,
+                "70plus_female": 5
+            }
+        },
+        # Specialized Nutrients
+        "coq10": {
+            "default": 3,
+            "age_gender_specific": {
+                "50s_male": 4,
+                "60s_male": 4,
+                "70plus_male": 4,
+                "50s_female": 4,
+                "60s_female": 4,
+                "70plus_female": 4,
+                "statin_users": 5
+            }
+        },
+        "probiotics": {
+            "default": 3,
+            "age_gender_specific": {
+                "antibiotic_users": 5,
+                "digestive_issues": 5
+            }
+        },
+        # Added Supplements
+        "taurine": {
+            "default": 3,
+            "age_gender_specific": {
+                "20s_male": 4,
+                "30s_male": 4, 
+                "40s_male": 4,
+                "athletes_male": 5,
+                "athletes_female": 5,
+                "60s_male": 4,
+                "60s_female": 4,
+                "70plus_male": 4,
+                "70plus_female": 4
+            }
+        },
+        "choline": {
+            "default": 3,
+            "age_gender_specific": {
+                "20s_female": 4,
+                "30s_female": 4,
+                "pregnant_female": 5,
+                "20s_male": 3,
+                "30s_male": 3,
+                "40s_male": 3,
+                "40s_female": 3
+            }
+        },
+    }
+    
+    return supplement_priorities
+
+# Helper functions for priority system
+def get_priority_for_user(supplement_id, age_group, gender, supplement_priorities):
+    """Get the priority rating for a supplement based on user demographics"""
+    
+    if supplement_id not in supplement_priorities:
+        return 0  # Not prioritized
+        
+    priority_data = supplement_priorities[supplement_id]
+    
+    # Check for age and gender specific priority
+    age_gender_key = f"{age_group}_{gender}"
+    if "age_gender_specific" in priority_data and age_gender_key in priority_data["age_gender_specific"]:
+        return priority_data["age_gender_specific"][age_gender_key]
+    
+    # Check for special categories like athletes or pregnant
+    for special_key in ["athletes_male", "athletes_female", "pregnant_female", "vegetarian_female", "vegan_female", 
+                        "antibiotic_users", "digestive_issues", "statin_users"]:
+        if special_key.endswith(gender) and "age_gender_specific" in priority_data:
+            if special_key in priority_data["age_gender_specific"]:
+                # This would require additional UI elements to identify these special categories
+                # For now, we'll skip these unless we add UI elements for them
+                pass
+    
+    # Otherwise return default priority
+    return priority_data.get("default", 0)
+
+def display_priority_rating(priority):
+    """Create a visual representation of the priority rating"""
+    if priority <= 0:
+        return ""
+        
+    # Using green circle emoji for priority dots
+    return "🟢" * priority
 
 # UI Functions
 def display_header():
@@ -42,7 +283,30 @@ def get_user_info():
             ["female", "male", "prefer_not_to_say"]
         )
     
-    return age_group, gender
+    # Add special category options
+    st.subheader("Special Categories (if applicable)")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        is_pregnant = st.checkbox("Pregnant or trying to conceive", value=False)
+        is_vegetarian = st.checkbox("Vegetarian", value=False)
+        is_athlete = st.checkbox("Athlete/High physical activity", value=False)
+        
+    with col2:
+        is_statin_user = st.checkbox("Taking statin medications", value=False)
+        is_antibiotic_user = st.checkbox("Recently used antibiotics", value=False)
+        has_digestive_issues = st.checkbox("Experiencing digestive issues", value=False)
+    
+    special_categories = {
+        "pregnant": is_pregnant,
+        "vegetarian": is_vegetarian,
+        "athlete": is_athlete,
+        "statin_user": is_statin_user,
+        "antibiotic_user": is_antibiotic_user,
+        "digestive_issues": has_digestive_issues
+    }
+    
+    return age_group, gender, special_categories
 
 def get_health_concerns(all_supplements, age_health_concerns, age_group, gender):
     # Extract all possible health concerns from the supplement data
@@ -111,7 +375,11 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
         "muscle_growth": "Muscle Growth",
         "metabolism_support": "Metabolism Support",
         "cardiovascular_health": "Cardiovascular Health",
-        "fertility": "Fertility Support"
+        "fertility": "Fertility Support",
+        "diabetes_risk": "Diabetes Risk Management",
+        "fatty_liver_disease": "Fatty Liver Disease",
+        "muscle_recovery": "Muscle Recovery",
+        "liver_health": "Liver Health"
     }
     
     # Convert technical terms to readable format for display
@@ -215,7 +483,7 @@ def check_interactions(recommendations, interactions_data, medications):
     
     return potential_interactions
 
-def display_recommendations(recommendations, interactions, age_group):
+def display_recommendations(recommendations, interactions, age_group, gender, supplement_priorities, special_categories=None):
     st.header("Your Personalized Supplement Recommendations")
     
     if not recommendations:
@@ -227,14 +495,44 @@ def display_recommendations(recommendations, interactions, age_group):
         supplement = rec_data["supplement"]
         matching_concerns = rec_data["matching_concerns"]
         
+        # Get priority rating for this supplement
+        priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
+        
+        # Adjust priority for special categories if applicable
+        if special_categories:
+            if special_categories.get("pregnant") and "pregnant_female" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["pregnant_female"])
+            if special_categories.get("athlete") and f"athletes_{gender}" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"][f"athletes_{gender}"])
+            if special_categories.get("statin_user") and "statin_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["statin_users"])
+            if special_categories.get("antibiotic_user") and "antibiotic_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["antibiotic_users"])
+            if special_categories.get("digestive_issues") and "digestive_issues" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["digestive_issues"])
+        
+        priority_display = display_priority_rating(priority)
+        
         # Format concerns for display
         concern_display = [c.replace("_", " ").title() for c in matching_concerns]
         
-        with st.expander(f"**{supplement['name']}**"):
+        # Display name with priority rating
+        with st.expander(f"**{supplement['name']}** {priority_display}"):
             # Main information
             st.markdown(f"**Benefits**: {supplement['benefits']}")
             st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
             st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
+            
+            # Display priority explanation if available
+            if priority > 0:
+                priority_text = {
+                    1: "May provide minor benefits for some individuals",
+                    2: "Generally beneficial for wellness",
+                    3: "Important for most people",
+                    4: "Very important, especially for your demographic",
+                    5: "Essential for optimal health in your demographic"
+                }
+                st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
             
             # Interaction warnings
             if supp_id in interactions:
@@ -315,6 +613,10 @@ def display_timing_guide(recommendations):
             timing_categories["bedtime"].append(name)
         elif name in ["Zinc"]:
             timing_categories["morning_with_food"].append(name)
+        elif name in ["Taurine"]:
+            timing_categories["morning_with_food"].append(name)
+        elif name in ["Choline"]:
+            timing_categories["morning_with_food"].append(name)
         else:
             # Default to morning with food if no specific rule
             timing_categories["morning_with_food"].append(name)
@@ -366,7 +668,7 @@ def display_timing_guide(recommendations):
     5. **Probiotics** are often best taken in the morning on an empty stomach
     """)
 
-def create_supplement_plan(recommendations, interactions, age_group):
+def create_supplement_plan(recommendations, interactions, age_group, gender, supplement_priorities):
     st.header("Your Personalized Supplement Plan")
     
     if not recommendations:
@@ -376,26 +678,43 @@ def create_supplement_plan(recommendations, interactions, age_group):
     # Create formatted plan
     plan_text = "# Your Personalized Supplement Plan\n\n"
     
+    # Sort recommendations by priority
+    sorted_recs = {}
     for supp_id, rec_data in recommendations.items():
-        supplement = rec_data["supplement"]
-        
-        plan_text += f"### {supplement['name']}\n"
-        plan_text += f"- **Dosage:** {supplement['dosage'].get(age_group, 'Consult healthcare provider')}\n"
-        plan_text += f"- **Benefits:** {supplement['benefits']}\n"
-        
-        # Add importance recommendation
-        if "importance_tier" in supplement:
-            good_option = supplement["importance_tier"].get("good", {})
-            if good_option:
-                plan_text += f"- **Recommended form:** {good_option.get('form', 'Standard form')}\n"
-                plan_text += f"- **Note:** {good_option.get('note', 'Standard form')}\n"
-        
-        if supp_id in interactions and interactions[supp_id]:
-            plan_text += "- **Special Considerations:**\n"
-            for interaction in interactions[supp_id]:
-                plan_text += f"  - *{interaction['name']}*: {interaction['note']}\n"
-        
-        plan_text += "\n"
+        priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
+        if priority not in sorted_recs:
+            sorted_recs[priority] = []
+        sorted_recs[priority].append((supp_id, rec_data))
+    
+    # Start with highest priority supplements
+    for priority in sorted([p for p in sorted_recs.keys()], reverse=True):
+        if priority >= 4:
+            plan_text += f"## Essential Supplements (Priority {priority}/5)\n\n"
+        elif priority >= 3:
+            plan_text += f"## Important Supplements (Priority {priority}/5)\n\n"
+        else:
+            plan_text += f"## Beneficial Supplements (Priority {priority}/5)\n\n"
+            
+        for supp_id, rec_data in sorted_recs[priority]:
+            supplement = rec_data["supplement"]
+            
+            plan_text += f"### {supplement['name']}\n"
+            plan_text += f"- **Dosage:** {supplement['dosage'].get(age_group, 'Consult healthcare provider')}\n"
+            plan_text += f"- **Benefits:** {supplement['benefits']}\n"
+            
+            # Add importance recommendation
+            if "importance_tier" in supplement:
+                good_option = supplement["importance_tier"].get("good", {})
+                if good_option:
+                    plan_text += f"- **Recommended form:** {good_option.get('form', 'Standard form')}\n"
+                    plan_text += f"- **Note:** {good_option.get('note', 'Standard form')}\n"
+            
+            if supp_id in interactions and interactions[supp_id]:
+                plan_text += "- **Special Considerations:**\n"
+                for interaction in interactions[supp_id]:
+                    plan_text += f"  - *{interaction['name']}*: {interaction['note']}\n"
+            
+            plan_text += "\n"
     
     # Add general advice
     plan_text += """## General Recommendations
@@ -405,6 +724,13 @@ def create_supplement_plan(recommendations, interactions, age_group):
 3. **Follow timing guidelines**: Some supplements are better absorbed at specific times or with/without food.
 4. **Regular reassessment**: Reassess your supplement needs every 6-12 months or with any significant health changes.
 5. **Quality matters**: Look for supplements that have been third-party tested.
+
+## Priority Rating System
+🟢🟢🟢🟢🟢 - Essential for optimal health in your demographic
+🟢🟢🟢🟢 - Very important, especially for your demographic
+🟢🟢🟢 - Important for most people
+🟢🟢 - Generally beneficial for wellness
+🟢 - May provide minor benefits for some individuals
 
 ## Important Disclaimer
 This supplement plan is provided for informational purposes only and is not a substitute for professional medical advice. Always consult with a healthcare provider before starting any supplement regimen, especially if you have health conditions or take medications.
@@ -425,7 +751,7 @@ This supplement plan is provided for informational purposes only and is not a su
 
 def main():
     # Load data
-    supplements_data, interactions_data, age_health_concerns = load_data()
+    supplements_data, interactions_data, age_health_concerns, supplement_priorities = load_data()
     
     # Add a sidebar for navigation
     with st.sidebar:
@@ -439,7 +765,7 @@ def main():
     if page == "Home & Recommendations":
         # Display header and get user information
         display_header()
-        age_group, gender = get_user_info()
+        age_group, gender, special_categories = get_user_info()
         
         # Get health concerns based on age and gender
         health_concerns, medications = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
@@ -455,14 +781,14 @@ def main():
                 # Check for potential interactions
                 interactions = check_interactions(recommendations, interactions_data, medications)
                 
-                # Display recommendations
-                display_recommendations(recommendations, interactions, age_group)
+                # Display recommendations with priority information
+                display_recommendations(recommendations, interactions, age_group, gender, supplement_priorities, special_categories)
                 
                 # Display timing guide
                 display_timing_guide(recommendations)
                 
                 # Create and offer downloadable plan
-                create_supplement_plan(recommendations, interactions, age_group)
+                create_supplement_plan(recommendations, interactions, age_group, gender, supplement_priorities)
     
     elif page == "Supplement Reference":
         st.title("Supplement Reference Guide")
@@ -481,7 +807,11 @@ def main():
         if selected_supplement:
             supp_data = supplements_data[selected_supplement]
             
-            st.subheader(supp_data["name"])
+            # Get priority rating
+            priority = get_priority_for_user(selected_supplement, "40s", "female", supplement_priorities)  # Default to middle-aged female
+            priority_display = display_priority_rating(priority)
+            
+            st.subheader(f"{supp_data['name']} {priority_display}")
             st.write(f"**Benefits:** {supp_data['benefits']}")
             
             # Display age-specific dosages
@@ -515,14 +845,23 @@ def main():
         st.write("""
         ## Personalized Supplement Advisor
         
-        This application provides personalized supplement recommendations based on your age, gender, and health concerns.
+        This application provides personalized supplement recommendations based on your age, gender, health concerns, and special categories.
         
         ### How It Works
         
-        1. The app collects basic information about you (age, gender, health concerns)
+        1. The app collects basic information about you (age, gender, health concerns, special categories)
         2. Based on scientific research, it suggests supplements that may benefit your specific profile
-        3. The app checks for potential interactions between supplements and with your medications
-        4. A timing guide helps you determine when to take each supplement for optimal effectiveness
+        3. The app assigns priority ratings (🟢) to help you understand which supplements are most important for you
+        4. The app checks for potential interactions between supplements and with your medications
+        5. A timing guide helps you determine when to take each supplement for optimal effectiveness
+        
+        ### Priority Rating System
+        
+        🟢🟢🟢🟢🟢 - Essential for optimal health in your demographic  
+        🟢🟢🟢🟢 - Very important, especially for your demographic  
+        🟢🟢🟢 - Important for most people  
+        🟢🟢 - Generally beneficial for wellness  
+        🟢 - May provide minor benefits for some individuals
         
         ### Data Sources
         
