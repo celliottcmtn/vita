@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from supplement_data import get_supplement_data, get_interactions_data, get_age_health_concerns
+import supplement_data
 
 # Set page configuration
 st.set_page_config(
@@ -12,9 +12,9 @@ st.set_page_config(
 
 # Load Data
 def load_data():
-    supplements_data = get_supplement_data()
-    interactions_data = get_interactions_data()
-    age_health_concerns = get_age_health_concerns()
+    supplements_data = supplement_data.get_supplement_data()
+    interactions_data = supplement_data.get_interactions_data()
+    age_health_concerns = supplement_data.get_age_health_concerns()
     return supplements_data, interactions_data, age_health_concerns
 
 # UI Functions
