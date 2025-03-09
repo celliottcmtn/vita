@@ -871,8 +871,8 @@ def main():
                     st.session_state.interactions = interactions
                     st.session_state.plan_generated = True
                     
-                    # Force rerun to show recommendations
-                    st.experimental_rerun()
+                    # Use standard rerun
+                    st.rerun()
         
         # Display recommendations if they exist
         if st.session_state.plan_generated and st.session_state.recommendations:
@@ -975,7 +975,7 @@ def main():
                 st.session_state.health_concerns = None
                 if 'plan_option' in st.session_state:
                     del st.session_state.plan_option
-                st.experimental_rerun()
+                st.rerun()
     
     elif page == "Supplement Reference":
         st.title("Supplement Reference Guide")
