@@ -10,6 +10,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Initialize session state for maintaining data between reruns
+if 'recommendations' not in st.session_state:
+    st.session_state.recommendations = None
+if 'interactions' not in st.session_state:
+    st.session_state.interactions = None
+if 'user_info' not in st.session_state:
+    st.session_state.user_info = None
+if 'health_concerns' not in st.session_state:
+    st.session_state.health_concerns = None
+if 'plan_generated' not in st.session_state:
+    st.session_state.plan_generated = False
+
 # Load Data
 def load_data():
     supplements_data = supplement_data.get_supplement_data()
@@ -827,89 +839,143 @@ def main():
     if page == "Home & Recommendations":
         # Display header and get user information
         display_header()
-        age_group, gender, special_categories = get_user_info()
         
-        # Get health concerns based on age and gender
-        health_concerns = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
+        # Initialize or update recommendations
+        if not st.session_state.plan_generated:
+            age_group, gender, special_categories = get_user_info()
+            
+            # Get health concerns based on age and gender
+            health_concerns = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
+            
+            # Store user info in session state
+            st.session_state.user_info = {
+                "age_group": age_group,
+                "gender": gender,
+                "special_categories": special_categories
+            }
+            st.session_state.health_concerns = health_concerns
+            
+            # Generate recommendations button
+            if st.button("Generate Recommendations"):
+                if not health_concerns:
+                    st.warning("Please select at least one health concern for personalized recommendations.")
+                else:
+                    # Get recommendations based on user input
+                    recommendations = get_recommended_supplements(supplements_data, age_group, gender, health_concerns)
+                    
+                    # Check for potential interactions
+                    interactions = check_interactions(recommendations, interactions_data)
+                    
+                    # Store in session state
+                    st.session_state.recommendations = recommendations
+                    st.session_state.interactions = interactions
+                    st.session_state.plan_generated = True
+                    
+                    # Force rerun to show recommendations
+                    st.experimental_rerun()
         
-        # Generate recommendations button
-        if st.button("Generate Recommendations"):
-            if not health_concerns:
-                st.warning("Please select at least one health concern for personalized recommendations.")
-            else:
-                # Get recommendations based on user input
-                recommendations = get_recommended_supplements(supplements_data, age_group, gender, health_concerns)
+        # Display recommendations if they exist
+        if st.session_state.plan_generated and st.session_state.recommendations:
+            # Retrieve data from session state
+            recommendations = st.session_state.recommendations
+            interactions = st.session_state.interactions
+            user_info = st.session_state.user_info
+            
+            # Display recommendations
+            display_recommendations(
+                recommendations, 
+                interactions, 
+                user_info["age_group"], 
+                user_info["gender"], 
+                supplement_priorities, 
+                user_info["special_categories"]
+            )
+            
+            # Let user choose which priority levels to include in their plan
+            st.header("Customize Your Supplement Plan")
+            st.write("Choose which priority levels to include in your personalized plan:")
+            
+            # Create plan customization options based on available priorities
+            age_group = user_info["age_group"]
+            gender = user_info["gender"]
+            special_categories = user_info["special_categories"]
+            
+            # Get all available priorities in the recommendations
+            available_priorities = set()
+            for supp_id in recommendations.keys():
+                priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
                 
-                # Check for potential interactions
-                interactions = check_interactions(recommendations, interactions_data)
+                # Adjust for special categories
+                if special_categories:
+                    if special_categories.get("pregnant") and "pregnant_female" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                        priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["pregnant_female"])
+                    if special_categories.get("athlete") and f"athletes_{gender}" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                        priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"][f"athletes_{gender}"])
+                    if special_categories.get("statin_user") and "statin_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                        priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["statin_users"])
+                    if special_categories.get("antibiotic_user") and "antibiotic_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                        priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["antibiotic_users"])
+                    if special_categories.get("digestive_issues") and "digestive_issues" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                        priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["digestive_issues"])
                 
-                # Display recommendations with priority information
-                display_recommendations(recommendations, interactions, age_group, gender, supplement_priorities, special_categories)
-                
-                # Let user choose which priority levels to include in their plan
-                st.header("Customize Your Supplement Plan")
-                st.write("Choose which priority levels to include in your personalized plan:")
-                
-                # Get all available priorities in the recommendations
-                available_priorities = set()
-                for supp_id in recommendations.keys():
-                    priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
-                    
-                    # Adjust for special categories
-                    if special_categories:
-                        if special_categories.get("pregnant") and "pregnant_female" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
-                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["pregnant_female"])
-                        if special_categories.get("athlete") and f"athletes_{gender}" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
-                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"][f"athletes_{gender}"])
-                        if special_categories.get("statin_user") and "statin_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
-                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["statin_users"])
-                        if special_categories.get("antibiotic_user") and "antibiotic_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
-                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["antibiotic_users"])
-                        if special_categories.get("digestive_issues") and "digestive_issues" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
-                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["digestive_issues"])
-                    
-                    available_priorities.add(priority)
-                
-                # Create options based on available priorities
-                priority_options = []
-                if 5 in available_priorities:
-                    priority_options.append({"label": "Essential Only (Priority 5)", "value": [5]})
-                if 5 in available_priorities and 4 in available_priorities:
-                    priority_options.append({"label": "Essential + Very Important (Priority 5-4)", "value": [5, 4]})
-                if 5 in available_priorities and 4 in available_priorities and 3 in available_priorities:
-                    priority_options.append({"label": "Essential + Very Important + Important (Priority 5-3)", "value": [5, 4, 3]})
-                if available_priorities:
-                    priority_options.append({"label": "All Recommendations", "value": list(range(1, 6))})
-                
-                # Default to all priorities if no other options
-                if not priority_options:
-                    priority_options.append({"label": "All Recommendations", "value": list(range(1, 6))})
-                
-                # Let user select which plan they want
-                selected_option_index = st.radio(
-                    "Select plan type:",
-                    options=range(len(priority_options)),
-                    format_func=lambda i: priority_options[i]["label"],
-                    index=len(priority_options)-1,  # Default to all recommendations
-                    key="plan_type_radio"
+                available_priorities.add(priority)
+            
+            # Create options based on available priorities
+            priority_options = []
+            if 5 in available_priorities:
+                priority_options.append({"label": "Essential Only (Priority 5)", "value": [5]})
+            if 5 in available_priorities and 4 in available_priorities:
+                priority_options.append({"label": "Essential + Very Important (Priority 5-4)", "value": [5, 4]})
+            if 5 in available_priorities and 4 in available_priorities and 3 in available_priorities:
+                priority_options.append({"label": "Essential + Very Important + Important (Priority 5-3)", "value": [5, 4, 3]})
+            if available_priorities:
+                priority_options.append({"label": "All Recommendations", "value": list(range(1, 6))})
+            
+            # Default to all priorities if no other options
+            if not priority_options:
+                priority_options.append({"label": "All Recommendations", "value": list(range(1, 6))})
+            
+            # Store selection in session state
+            if 'plan_option' not in st.session_state:
+                st.session_state.plan_option = len(priority_options) - 1  # Default to all recommendations
+            
+            # Let user select which plan they want
+            selected_option_index = st.radio(
+                "Select plan type:",
+                options=range(len(priority_options)),
+                format_func=lambda i: priority_options[i]["label"],
+                index=st.session_state.plan_option,
+                key="plan_type_radio",
+                on_change=lambda: setattr(st.session_state, 'plan_option', st.session_state.plan_type_radio)
+            )
+            
+            selected_priorities = priority_options[selected_option_index]["value"]
+            
+            # Generate plan button
+            if st.button("Generate Customized Plan"):
+                # Create and offer downloadable plan with selected priorities
+                create_supplement_plan(
+                    recommendations, 
+                    interactions, 
+                    age_group, 
+                    gender, 
+                    supplement_priorities, 
+                    selected_priorities
                 )
                 
-                selected_priorities = priority_options[selected_option_index]["value"]
-                
-                # Add a button to generate the customized plan
-                if st.button("Generate Customized Plan"):
-                    # Create and offer downloadable plan with selected priorities
-                    create_supplement_plan(
-                        recommendations, 
-                        interactions, 
-                        age_group, 
-                        gender, 
-                        supplement_priorities, 
-                        selected_priorities
-                    )
-                    
-                    # Update timing guide to match selected priorities
-                    display_timing_guide(recommendations, age_group, gender, supplement_priorities, selected_priorities)
+                # Update timing guide to match selected priorities
+                display_timing_guide(recommendations, age_group, gender, supplement_priorities, selected_priorities)
+            
+            # Start over button
+            if st.button("Start Over"):
+                st.session_state.plan_generated = False
+                st.session_state.recommendations = None
+                st.session_state.interactions = None
+                st.session_state.user_info = None
+                st.session_state.health_concerns = None
+                if 'plan_option' in st.session_state:
+                    del st.session_state.plan_option
+                st.experimental_rerun()
     
     elif page == "Supplement Reference":
         st.title("Supplement Reference Guide")
