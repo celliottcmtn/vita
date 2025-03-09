@@ -533,8 +533,12 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
             
             # Display name with expandable details
             with st.expander(f"**{supplement['name']}**"):
-                # Main information
-                st.markdown(f"**Benefits**: {supplement['benefits']}")
+                # Main information with hyperlinked benefits
+                if supplement.get('sources') and len(supplement['sources']) > 0:
+                    # Link benefits to the first source
+                    st.markdown(f"**Benefits**: [{supplement['benefits']}]({supplement['sources'][0]})")
+                else:
+                    st.markdown(f"**Benefits**: {supplement['benefits']}")
                 st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
                 st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
                 
@@ -826,7 +830,12 @@ def main():
             priority_display = display_priority_rating(priority)
             
             st.subheader(f"{supp_data['name']} {priority_display}")
-            st.write(f"**Benefits:** {supp_data['benefits']}")
+            
+            # Hyperlink benefits to the first source if available
+            if supp_data.get('sources') and len(supp_data['sources']) > 0:
+                st.markdown(f"**Benefits:** [{supp_data['benefits']}]({supp_data['sources'][0]})")
+            else:
+                st.write(f"**Benefits:** {supp_data['benefits']}")
             
             # Display age-specific dosages
             st.write("**Recommended Dosages by Age:**")
