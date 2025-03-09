@@ -391,28 +391,32 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
     
     with col1:
         st.subheader("Common Health Concerns")
-        # Show recommended concerns first with pre-selected checkboxes
-        selected_concerns = []
-        for concern in recommended_concerns:
-            if concern in display_concerns:
-                label = display_concerns[concern]
-                if st.checkbox(label, value=False, key=f"rec_{concern}"):
-                    selected_concerns.append(concern)
+        # Show recommended concerns in a multiselect dropdown
+        recommended_display = [display_concerns[concern] for concern in recommended_concerns if concern in display_concerns]
+        recommended_options = {display_concerns[c]: c for c in recommended_concerns if c in display_concerns}
+        
+        selected_recommended = st.multiselect(
+            "Select your common health concerns:",
+            options=recommended_display,
+            default=[]
+        )
+        selected_concerns = [recommended_options[sel] for sel in selected_recommended if sel in recommended_options]
     
     with col2:
         st.subheader("Additional Health Concerns")
-        # Show other concerns
+        # Show other concerns in a multiselect dropdown
         other_concerns = [c for c in all_health_concerns if c not in recommended_concerns]
-        for concern in other_concerns:
-            label = display_concerns[concern]
-            if st.checkbox(label, value=False, key=f"other_{concern}"):
-                selected_concerns.append(concern)
-                
-    # Input for medications
-    st.subheader("Current Medications")
-    medications = st.text_input("List any medications you are currently taking (separated by commas):")
+        other_display = [display_concerns[concern] for concern in other_concerns]
+        other_options = {display_concerns[c]: c for c in other_concerns}
+        
+        selected_other = st.multiselect(
+            "Select any additional health concerns:",
+            options=other_display,
+            default=[]
+        )
+        selected_concerns.extend([other_options[sel] for sel in selected_other if sel in other_options])
     
-    return selected_concerns, medications
+    return selected_concerns
 
 def get_recommended_supplements(supplements_data, age_group, gender, health_concerns):
     recommended = {}
@@ -442,8 +446,8 @@ def get_recommended_supplements(supplements_data, age_group, gender, health_conc
     
     return sorted_recommendations
 
-def check_interactions(recommendations, interactions_data, medications):
-    """Check for potential interactions between recommended supplements and with medications."""
+def check_interactions(recommendations, interactions_data):
+    """Check for potential interactions between recommended supplements."""
     
     potential_interactions = {}
     
@@ -463,21 +467,6 @@ def check_interactions(recommendations, interactions_data, medications):
                         "note": "May reduce absorption when taken together. Take at least 2 hours apart."
                     })
         
-        # Check against medication interactions
-        if medications:
-            med_list = [med.strip().lower() for med in medications.split(",")]
-            supp_data = recommendations[supp_id]["supplement"]
-            
-            for med in med_list:
-                for interaction in supp_data.get("interactions", []):
-                    # Simple keyword matching (in a real app, would use a more sophisticated approach)
-                    if med in interaction or interaction in med:
-                        interactions.append({
-                            "type": "medication",
-                            "name": med,
-                            "note": f"Potential interaction with {med}. Consult healthcare provider."
-                        })
-        
         if interactions:
             potential_interactions[supp_id] = interactions
     
@@ -490,7 +479,10 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
         st.warning("No specific supplements recommended based on your selections.")
         return
     
-    # Create expandable sections for each recommendation
+    # Create a dictionary to hold recommendations with their priorities
+    prioritized_recs = {}
+    
+    # Calculate priority for each recommendation
     for supp_id, rec_data in recommendations.items():
         supplement = rec_data["supplement"]
         matching_concerns = rec_data["matching_concerns"]
@@ -511,71 +503,94 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
             if special_categories.get("digestive_issues") and "digestive_issues" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
                 priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["digestive_issues"])
         
+        # Add to priority group
+        if priority not in prioritized_recs:
+            prioritized_recs[priority] = []
+        
+        prioritized_recs[priority].append((supp_id, rec_data))
+    
+    # Display recommendations by priority (highest to lowest)
+    for priority in sorted(prioritized_recs.keys(), reverse=True):
         priority_display = display_priority_rating(priority)
         
-        # Format concerns for display
-        concern_display = [c.replace("_", " ").title() for c in matching_concerns]
+        if priority == 5:
+            st.subheader(f"Essential Supplements {priority_display}")
+        elif priority == 4:
+            st.subheader(f"Very Important Supplements {priority_display}")
+        elif priority == 3:
+            st.subheader(f"Important Supplements {priority_display}")
+        elif priority == 2:
+            st.subheader(f"Generally Beneficial Supplements {priority_display}")
+        else:
+            st.subheader(f"Potentially Beneficial Supplements {priority_display}")
         
-        # Display name with priority rating
-        with st.expander(f"**{supplement['name']}** {priority_display}"):
-            # Main information
-            st.markdown(f"**Benefits**: {supplement['benefits']}")
-            st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
-            st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
+        for supp_id, rec_data in prioritized_recs[priority]:
+            supplement = rec_data["supplement"]
+            matching_concerns = rec_data["matching_concerns"]
             
-            # Display priority explanation for all supplements
-            priority_text = {
-                1: "May provide minor benefits for some individuals",
-                2: "Generally beneficial for wellness",
-                3: "Important for most people",
-                4: "Very important, especially for your demographic",
-                5: "Essential for optimal health in your demographic"
-            }
-            st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
+            # Format concerns for display
+            concern_display = [c.replace("_", " ").title() for c in matching_concerns]
             
-            # Interaction warnings
-            if supp_id in interactions:
-                st.markdown("### ⚠️ Potential Interactions")
-                for interaction in interactions[supp_id]:
-                    st.markdown(f"- **{interaction['name']}**: {interaction['note']}")
-            
-            # Contraindications
-            if supplement.get("contraindications"):
-                contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
-                st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
-            
-            # Display importance tiers if available
-            if "importance_tier" in supplement:
-                st.markdown("### Recommended Forms")
+            # Display name with expandable details
+            with st.expander(f"**{supplement['name']}**"):
+                # Main information
+                st.markdown(f"**Benefits**: {supplement['benefits']}")
+                st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
+                st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
                 
-                essential = supplement["importance_tier"].get("essential", {})
-                good = supplement["importance_tier"].get("good", {})
-                ideal = supplement["importance_tier"].get("ideal", {})
+                # Display priority explanation
+                priority_text = {
+                    1: "May provide minor benefits for some individuals",
+                    2: "Generally beneficial for wellness",
+                    3: "Important for most people",
+                    4: "Very important, especially for your demographic",
+                    5: "Essential for optimal health in your demographic"
+                }
+                st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
                 
-                col1, col2, col3 = st.columns(3)
+                # Interaction warnings
+                if supp_id in interactions:
+                    st.markdown("### ⚠️ Potential Interactions")
+                    for interaction in interactions[supp_id]:
+                        st.markdown(f"- **{interaction['name']}**: {interaction['note']}")
                 
-                with col1:
-                    st.markdown("**Essential**")
-                    if essential:
-                        st.markdown(f"Form: {essential.get('form', 'N/A')}")
-                        st.markdown(f"Note: {essential.get('note', 'N/A')}")
+                # Contraindications
+                if supplement.get("contraindications"):
+                    contraindications = [c.replace("_", " ").title() for c in supplement.get("contraindications", [])]
+                    st.markdown(f"**Use caution if you have**: {', '.join(contraindications)}")
                 
-                with col2:
-                    st.markdown("**Good Value**")
-                    if good:
-                        st.markdown(f"Form: {good.get('form', 'N/A')}")
-                        st.markdown(f"Note: {good.get('note', 'N/A')}")
-                
-                with col3:
-                    st.markdown("**Ideal Choice**")
-                    if ideal:
-                        st.markdown(f"Form: {ideal.get('form', 'N/A')}")
-                        st.markdown(f"Note: {ideal.get('note', 'N/A')}")
-                        
-            # Sources
-            st.markdown("### Sources")
-            for source in supplement.get("sources", []):
-                st.markdown(f"- [{source}]({source})")
+                # Display importance tiers if available
+                if "importance_tier" in supplement:
+                    st.markdown("### Recommended Forms")
+                    
+                    essential = supplement["importance_tier"].get("essential", {})
+                    good = supplement["importance_tier"].get("good", {})
+                    ideal = supplement["importance_tier"].get("ideal", {})
+                    
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        st.markdown("**Essential**")
+                        if essential:
+                            st.markdown(f"Form: {essential.get('form', 'N/A')}")
+                            st.markdown(f"Note: {essential.get('note', 'N/A')}")
+                    
+                    with col2:
+                        st.markdown("**Good Value**")
+                        if good:
+                            st.markdown(f"Form: {good.get('form', 'N/A')}")
+                            st.markdown(f"Note: {good.get('note', 'N/A')}")
+                    
+                    with col3:
+                        st.markdown("**Ideal Choice**")
+                        if ideal:
+                            st.markdown(f"Form: {ideal.get('form', 'N/A')}")
+                            st.markdown(f"Note: {ideal.get('note', 'N/A')}")
+                            
+                # Sources
+                st.markdown("### Sources")
+                for source in supplement.get("sources", []):
+                    st.markdown(f"- [{source}]({source})")
 
 def display_timing_guide(recommendations):
     st.header("Supplement Timing Guide")
@@ -767,7 +782,7 @@ def main():
         age_group, gender, special_categories = get_user_info()
         
         # Get health concerns based on age and gender
-        health_concerns, medications = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
+        health_concerns = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
         
         # Generate recommendations button
         if st.button("Generate Recommendations"):
@@ -778,7 +793,7 @@ def main():
                 recommendations = get_recommended_supplements(supplements_data, age_group, gender, health_concerns)
                 
                 # Check for potential interactions
-                interactions = check_interactions(recommendations, interactions_data, medications)
+                interactions = check_interactions(recommendations, interactions_data)
                 
                 # Display recommendations with priority information
                 display_recommendations(recommendations, interactions, age_group, gender, supplement_priorities, special_categories)
@@ -851,7 +866,7 @@ def main():
         1. The app collects basic information about you (age, gender, health concerns, special categories)
         2. Based on scientific research, it suggests supplements that may benefit your specific profile
         3. The app assigns priority ratings (🟢) to help you understand which supplements are most important for you
-        4. The app checks for potential interactions between supplements and with your medications
+        4. The app checks for potential interactions between supplements
         5. A timing guide helps you determine when to take each supplement for optimal effectiveness
         
         ### Priority Rating System
