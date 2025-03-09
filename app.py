@@ -596,7 +596,7 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
                 for source in supplement.get("sources", []):
                     st.markdown(f"- [{source}]({source})")
 
-def display_timing_guide(recommendations):
+def display_timing_guide(recommendations, age_group=None, gender=None, supplement_priorities=None, selected_priorities=None):
     st.header("Supplement Timing Guide")
     
     if not recommendations:
@@ -614,6 +614,12 @@ def display_timing_guide(recommendations):
     
     # Simple rules for categorizing supplements
     for supp_id, rec_data in recommendations.items():
+        # Skip if not in selected priorities
+        if age_group and gender and supplement_priorities and selected_priorities:
+            priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
+            if priority not in selected_priorities:
+                continue
+                
         supplement = rec_data["supplement"]
         name = supplement["name"]
         
@@ -686,32 +692,70 @@ def display_timing_guide(recommendations):
     5. **Probiotics** are often best taken in the morning on an empty stomach
     """)
 
-def create_supplement_plan(recommendations, interactions, age_group, gender, supplement_priorities):
+def create_supplement_plan(recommendations, interactions, age_group, gender, supplement_priorities, selected_priorities=None):
     st.header("Your Personalized Supplement Plan")
     
     if not recommendations:
         st.warning("No specific supplements recommended based on your selections.")
         return
     
+    # If no priorities selected, include all
+    if selected_priorities is None:
+        selected_priorities = list(range(1, 6))  # Priorities 1-5
+    
     # Create formatted plan
     plan_text = "# Your Personalized Supplement Plan\n\n"
+    
+    # Add information about the selected priority levels
+    if len(selected_priorities) < 5:
+        if len(selected_priorities) == 1 and 5 in selected_priorities:
+            plan_text += "## Plan Type: Essential Supplements Only\n\n"
+        elif set(selected_priorities) == {4, 5}:
+            plan_text += "## Plan Type: Essential + Very Important Supplements\n\n"
+        elif set(selected_priorities) == {3, 4, 5}:
+            plan_text += "## Plan Type: Essential + Very Important + Important Supplements\n\n"
+        else:
+            included_levels = []
+            if 5 in selected_priorities:
+                included_levels.append("Essential")
+            if 4 in selected_priorities:
+                included_levels.append("Very Important")
+            if 3 in selected_priorities:
+                included_levels.append("Important")
+            if 2 in selected_priorities:
+                included_levels.append("Generally Beneficial")
+            if 1 in selected_priorities:
+                included_levels.append("Potentially Beneficial")
+            
+            plan_text += f"## Plan Type: Custom ({', '.join(included_levels)})\n\n"
+    else:
+        plan_text += "## Plan Type: Comprehensive (All Recommendations)\n\n"
     
     # Sort recommendations by priority
     sorted_recs = {}
     for supp_id, rec_data in recommendations.items():
         priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
+        
+        # Skip if not in selected priorities
+        if priority not in selected_priorities:
+            continue
+            
         if priority not in sorted_recs:
             sorted_recs[priority] = []
         sorted_recs[priority].append((supp_id, rec_data))
     
     # Start with highest priority supplements
     for priority in sorted([p for p in sorted_recs.keys()], reverse=True):
-        if priority >= 4:
+        if priority == 5:
             plan_text += f"## Essential Supplements (Priority {priority}/5)\n\n"
-        elif priority >= 3:
+        elif priority == 4:
+            plan_text += f"## Very Important Supplements (Priority {priority}/5)\n\n"
+        elif priority == 3:
             plan_text += f"## Important Supplements (Priority {priority}/5)\n\n"
+        elif priority == 2:
+            plan_text += f"## Generally Beneficial Supplements (Priority {priority}/5)\n\n"
         else:
-            plan_text += f"## Beneficial Supplements (Priority {priority}/5)\n\n"
+            plan_text += f"## Potentially Beneficial Supplements (Priority {priority}/5)\n\n"
             
         for supp_id, rec_data in sorted_recs[priority]:
             supplement = rec_data["supplement"]
@@ -802,11 +846,67 @@ def main():
                 # Display recommendations with priority information
                 display_recommendations(recommendations, interactions, age_group, gender, supplement_priorities, special_categories)
                 
-                # Display timing guide
-                display_timing_guide(recommendations)
+                # Let user choose which priority levels to include in their plan
+                st.header("Customize Your Supplement Plan")
+                st.write("Choose which priority levels to include in your personalized plan:")
                 
-                # Create and offer downloadable plan
-                create_supplement_plan(recommendations, interactions, age_group, gender, supplement_priorities)
+                # Get all available priorities in the recommendations
+                available_priorities = set()
+                for supp_id in recommendations.keys():
+                    priority = get_priority_for_user(supp_id, age_group, gender, supplement_priorities)
+                    
+                    # Adjust for special categories
+                    if special_categories:
+                        if special_categories.get("pregnant") and "pregnant_female" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["pregnant_female"])
+                        if special_categories.get("athlete") and f"athletes_{gender}" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"][f"athletes_{gender}"])
+                        if special_categories.get("statin_user") and "statin_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["statin_users"])
+                        if special_categories.get("antibiotic_user") and "antibiotic_users" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["antibiotic_users"])
+                        if special_categories.get("digestive_issues") and "digestive_issues" in supplement_priorities.get(supp_id, {}).get("age_gender_specific", {}):
+                            priority = max(priority, supplement_priorities[supp_id]["age_gender_specific"]["digestive_issues"])
+                    
+                    available_priorities.add(priority)
+                
+                # Create options based on available priorities
+                priority_options = []
+                if 5 in available_priorities:
+                    priority_options.append({"label": "Essential Only (Priority 5)", "value": [5]})
+                if 5 in available_priorities and 4 in available_priorities:
+                    priority_options.append({"label": "Essential + Very Important (Priority 5-4)", "value": [5, 4]})
+                if 5 in available_priorities and 4 in available_priorities and 3 in available_priorities:
+                    priority_options.append({"label": "Essential + Very Important + Important (Priority 5-3)", "value": [5, 4, 3]})
+                if available_priorities:
+                    priority_options.append({"label": "All Recommendations", "value": list(range(1, 6))})
+                
+                # Default to all priorities if no other options
+                if not priority_options:
+                    priority_options.append({"label": "All Recommendations", "value": list(range(1, 6))})
+                
+                # Let user select which plan they want
+                selected_option_index = st.radio(
+                    "Select plan type:",
+                    options=range(len(priority_options)),
+                    format_func=lambda i: priority_options[i]["label"],
+                    index=len(priority_options)-1  # Default to all recommendations
+                )
+                
+                selected_priorities = priority_options[selected_option_index]["value"]
+                
+                # Create and offer downloadable plan with selected priorities
+                create_supplement_plan(
+                    recommendations, 
+                    interactions, 
+                    age_group, 
+                    gender, 
+                    supplement_priorities, 
+                    selected_priorities
+                )
+                
+                # Update timing guide to match selected priorities
+                display_timing_guide(recommendations, age_group, gender, supplement_priorities, selected_priorities)
     
     elif page == "Supplement Reference":
         st.title("Supplement Reference Guide")
