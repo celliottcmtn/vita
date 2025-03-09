@@ -814,7 +814,34 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
             # Display name with expandable details
             with st.expander(f"**{supplement['name']}**"):
                 # Main information with hyperlinked benefits
-                # Add the main program flow
+                if supplement.get('sources') and len(supplement['sources']) > 0:
+                    st.write("**Research Sources:**")
+                    for source in supplement['sources']:
+                        st.write(f"- {source}")
+                
+                # Display benefits based on matching health concerns
+                st.write("**Benefits for your health concerns:**")
+                for concern in matching_concerns:
+                    readable_concern = concern.replace("_", " ").title()
+                    st.write(f"- {readable_concern}")
+                
+                # Display dosage information
+                if 'dosage' in supplement:
+                    st.write("**Recommended Dosage:**")
+                    st.write(supplement['dosage'])
+                
+                # Display any notes
+                if 'notes' in supplement:
+                    st.write("**Additional Notes:**")
+                    st.write(supplement['notes'])
+                
+                # Display interaction warnings if any
+                if supp_id in interactions:
+                    st.write("**⚠️ Potential Interactions:**")
+                    for interaction in interactions[supp_id]:
+                        st.write(f"- {interaction['name']}: {interaction['note']}")
+
+# Add the main program flow
 def main():
     display_header()
     
@@ -856,31 +883,3 @@ def main():
 # Run the app
 if __name__ == "__main__":
     main()
-sources') and len(supplement['sources']) > 0:
-                    st.write("**Research Sources:**")
-                    for source in supplement['sources']:
-                        st.write(f"- {source}")
-                
-                # Display benefits based on matching health concerns
-                st.write("**Benefits for your health concerns:**")
-                for concern in matching_concerns:
-                    readable_concern = concern.replace("_", " ").title()
-                    st.write(f"- {readable_concern}")
-                
-                # Display dosage information
-                if 'dosage' in supplement:
-                    st.write("**Recommended Dosage:**")
-                    st.write(supplement['dosage'])
-                
-                # Display any notes
-                if 'notes' in supplement:
-                    st.write("**Additional Notes:**")
-                    st.write(supplement['notes'])
-                
-                # Display interaction warnings if any
-                if supp_id in interactions:
-                    st.write("**⚠️ Potential Interactions:**")
-                    for interaction in interactions[supp_id]:
-                        st.write(f"- {interaction['name']}: {interaction['note']}")
-                
-                if supplement.get('
