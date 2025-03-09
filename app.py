@@ -427,7 +427,10 @@ def display_priority_rating(priority):
     if priority <= 0:
         return ""
     
-    # Return HTML for a modern priority indicator
+    # Using green circle emoji for priority dots
+    emoji_rating = "🟢" * priority
+    
+    # Add text description
     priority_descriptions = {
         1: "Potentially Beneficial",
         2: "Generally Beneficial",
@@ -436,7 +439,7 @@ def display_priority_rating(priority):
         5: "Essential"
     }
     
-    return f'<span class="priority-pill-{priority}">{priority_descriptions[priority]}</span>'
+    return f"{emoji_rating} ({priority_descriptions[priority]})"
 
 # UI Functions
 def display_header():
@@ -460,8 +463,10 @@ def get_user_info():
     with col2:
         gender = st.selectbox(
             "Select your gender:",
-            ["female", "male", "prefer_not_to_say"]
+            ["Female", "Male", "Prefer Not to Say"]
         )
+        # Convert to lowercase for backend processing
+        gender = gender.lower()
     
     # Add special category options
     st.subheader("Special Categories (if applicable)")
@@ -566,35 +571,46 @@ def get_health_concerns(all_supplements, age_health_concerns, age_group, gender)
     display_concerns = {concern: concern_mapping.get(concern, concern.replace("_", " ").title()) 
                        for concern in all_health_concerns}
     
-    # Create two columns
-    col1, col2 = st.columns(2)
+    # Create two sections
+    st.subheader("Common Health Concerns for Your Age Group")
+    st.write("Check all that apply to you:")
     
-    with col1:
-        st.subheader("Common Health Concerns")
-        # Show recommended concerns in a multiselect dropdown
-        recommended_display = [display_concerns[concern] for concern in recommended_concerns if concern in display_concerns]
-        recommended_options = {display_concerns[c]: c for c in recommended_concerns if c in display_concerns}
-        
-        selected_recommended = st.multiselect(
-            "Select your common health concerns:",
-            options=recommended_display,
-            default=[]
-        )
-        selected_concerns = [recommended_options[sel] for sel in selected_recommended if sel in recommended_options]
+    # Show recommended concerns first with pre-selected checkboxes organized in columns
+    selected_concerns = []
     
-    with col2:
-        st.subheader("Additional Health Concerns")
-        # Show other concerns in a multiselect dropdown
-        other_concerns = [c for c in all_health_concerns if c not in recommended_concerns]
-        other_display = [display_concerns[concern] for concern in other_concerns]
-        other_options = {display_concerns[c]: c for c in other_concerns}
-        
-        selected_other = st.multiselect(
-            "Select any additional health concerns:",
-            options=other_display,
-            default=[]
-        )
-        selected_concerns.extend([other_options[sel] for sel in selected_other if sel in other_options])
+    # Organize common concerns in multiple columns
+    num_columns = 3
+    rec_concerns_columns = st.columns(num_columns)
+    
+    # Split recommended concerns across columns
+    rec_concerns_split = [[] for _ in range(num_columns)]
+    for i, concern in enumerate(recommended_concerns):
+        if concern in display_concerns:
+            rec_concerns_split[i % num_columns].append(concern)
+    
+    # Display concerns in each column
+    for i, column in enumerate(rec_concerns_columns):
+        with column:
+            for concern in rec_concerns_split[i]:
+                if concern in display_concerns:
+                    label = display_concerns[concern]
+                    if st.checkbox(label, value=False, key=f"rec_{concern}"):
+                        selected_concerns.append(concern)
+    
+    # Create Additional health concerns section with dropdown
+    st.subheader("Additional Health Concerns")
+    
+    # Other concerns (not in recommended)
+    other_concerns = [c for c in all_health_concerns if c not in recommended_concerns]
+    other_display = [display_concerns[concern] for concern in other_concerns]
+    other_options = {display_concerns[c]: c for c in other_concerns}
+    
+    selected_other = st.multiselect(
+        "Select any additional health concerns:",
+        options=other_display,
+        default=[]
+    )
+    selected_concerns.extend([other_options[sel] for sel in selected_other if sel in other_options])
     
     return selected_concerns
 
