@@ -10,6 +10,166 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Apply modern design styling
+st.markdown("""
+<style>
+    /* Modern color palette */
+    :root {
+        --primary: #007AFF;
+        --secondary: #5AC8FA;
+        --accent: #FF9500;
+        --background: #F5F5F7;
+        --card: #FFFFFF;
+        --text: #1D1D1F;
+        --text-secondary: #86868B;
+        --success: #34C759;
+        --warning: #FF9500;
+        --error: #FF3B30;
+        --border: #E5E5EA;
+    }
+    
+    /* Base styling */
+    .main {
+        background-color: var(--background);
+        color: var(--text);
+    }
+    
+    h1, h2, h3, h4 {
+        font-family: SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+    }
+    
+    h2 {
+        font-size: 1.8rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+        font-size: 1.3rem;
+        margin-top: 1.2rem;
+        margin-bottom: 0.8rem;
+        color: var(--text);
+    }
+    
+    p {
+        font-family: SF Pro Text, -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    /* Card styling */
+    .stExpander {
+        background-color: var(--card);
+        border-radius: 10px !important;
+        border: none !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        transition: all 0.2s ease;
+    }
+    
+    .stExpander:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08) !important;
+        transform: translateY(-1px);
+    }
+    
+    /* Button styling */
+    .stButton button {
+        background-color: var(--primary) !important;
+        color: white !important;
+        border-radius: 8px !important;
+        border: none !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .stButton button:hover {
+        background-color: #0062CC !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Radio button styling */
+    .stRadio > div {
+        background-color: var(--card);
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    /* Select box styling */
+    .stSelectbox > div > div {
+        border-radius: 8px !important;
+        border: 1px solid var(--border) !important;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg, .css-163ttbj {
+        background-color: var(--card);
+    }
+    
+    /* Pill priorities */
+    .priority-pill-5 {
+        background-color: var(--success);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    .priority-pill-4 {
+        background-color: var(--primary);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    .priority-pill-3 {
+        background-color: var(--secondary);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    .priority-pill-2 {
+        background-color: var(--warning);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    .priority-pill-1 {
+        background-color: var(--text-secondary);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-left: 5px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state for maintaining data between reruns
 if 'recommendations' not in st.session_state:
     st.session_state.recommendations = None
@@ -266,9 +426,17 @@ def display_priority_rating(priority):
     """Create a visual representation of the priority rating"""
     if priority <= 0:
         return ""
-        
-    # Using green circle emoji for priority dots
-    return "🟢" * priority
+    
+    # Return HTML for a modern priority indicator
+    priority_descriptions = {
+        1: "Potentially Beneficial",
+        2: "Generally Beneficial",
+        3: "Important",
+        4: "Very Important",
+        5: "Essential"
+    }
+    
+    return f'<span class="priority-pill-{priority}">{priority_descriptions[priority]}</span>'
 
 # UI Functions
 def display_header():
@@ -564,6 +732,7 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
                 }
                 st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
                 
+                
                 # Interaction warnings
                 if supp_id in interactions:
                     st.markdown("### ⚠️ Potential Interactions")
@@ -705,7 +874,7 @@ def display_timing_guide(recommendations, age_group=None, gender=None, supplemen
     """)
 
 def create_supplement_plan(recommendations, interactions, age_group, gender, supplement_priorities, selected_priorities=None):
-    st.header("Your Personalized Supplement Plan")
+    # No header here to avoid duplication
     
     if not recommendations:
         st.warning("No specific supplements recommended based on your selections.")
@@ -723,9 +892,9 @@ def create_supplement_plan(recommendations, interactions, age_group, gender, sup
         if len(selected_priorities) == 1 and 5 in selected_priorities:
             plan_text += "## Plan Type: Essential Supplements Only\n\n"
         elif set(selected_priorities) == {4, 5}:
-            plan_text += "## Plan Type: Essential + Very Important Supplements\n\n"
+            plan_text += "## Plan Type: Essential, Very Important Supplements\n\n"
         elif set(selected_priorities) == {3, 4, 5}:
-            plan_text += "## Plan Type: Essential + Very Important + Important Supplements\n\n"
+            plan_text += "## Plan Type: Essential, Very Important, Important Supplements\n\n"
         else:
             included_levels = []
             if 5 in selected_priorities:
@@ -739,7 +908,7 @@ def create_supplement_plan(recommendations, interactions, age_group, gender, sup
             if 1 in selected_priorities:
                 included_levels.append("Potentially Beneficial")
             
-            plan_text += f"## Plan Type: Custom ({', '.join(included_levels)})\n\n"
+            plan_text += f"## Plan Type: {', '.join(included_levels)}\n\n"
     else:
         plan_text += "## Plan Type: Comprehensive (All Recommendations)\n\n"
     
@@ -774,7 +943,12 @@ def create_supplement_plan(recommendations, interactions, age_group, gender, sup
             
             plan_text += f"### {supplement['name']}\n"
             plan_text += f"- **Dosage:** {supplement['dosage'].get(age_group, 'Consult healthcare provider')}\n"
-            plan_text += f"- **Benefits:** {supplement['benefits']}\n"
+            
+            # Hyperlink benefits to the first source if available
+            if supplement.get('sources') and len(supplement['sources']) > 0:
+                plan_text += f"- **Benefits:** [{supplement['benefits']}]({supplement['sources'][0]})\n"
+            else:
+                plan_text += f"- **Benefits:** {supplement['benefits']}\n"
             
             # Add importance recommendation
             if "importance_tier" in supplement:
