@@ -1,5 +1,5 @@
 # Link benefits to the first source
-                    st.markdown(f"**Benefits**: [{supplement['benefits']}]({supplement['sources'][0]})")
+                st.markdown(f"**Benefits**: [{supplement['benefits']}]({supplement['sources'][0]})")
                 else:
                     st.markdown(f"**Benefits**: {supplement['benefits']}")
                 st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
