@@ -9,8 +9,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# Apply modern design styling with mobile fixes
 st.markdown("""
 <style>
     /* Modern color palette */
