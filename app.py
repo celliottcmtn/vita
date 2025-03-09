@@ -1,4 +1,16 @@
-4: "Very important, especially for your demographic",
+# Link benefits to the first source
+                    st.markdown(f"**Benefits**: [{supplement['benefits']}]({supplement['sources'][0]})")
+                else:
+                    st.markdown(f"**Benefits**: {supplement['benefits']}")
+                st.markdown(f"**Recommended for**: {', '.join(concern_display)}")
+                st.markdown(f"**Suggested dosage**: {supplement['dosage'].get(age_group, 'Not specified')}")
+                
+                # Display priority explanation
+                priority_text = {
+                    1: "May provide minor benefits for some individuals",
+                    2: "Generally beneficial for wellness",
+                    3: "Important for most people",
+                    4: "Very important, especially for your demographic",
                     5: "Essential for optimal health in your demographic"
                 }
                 st.markdown(f"**Priority**: {priority}/5 - {priority_text.get(priority, '')}")
