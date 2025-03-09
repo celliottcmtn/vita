@@ -890,23 +890,26 @@ def main():
                     "Select plan type:",
                     options=range(len(priority_options)),
                     format_func=lambda i: priority_options[i]["label"],
-                    index=len(priority_options)-1  # Default to all recommendations
+                    index=len(priority_options)-1,  # Default to all recommendations
+                    key="plan_type_radio"
                 )
                 
                 selected_priorities = priority_options[selected_option_index]["value"]
                 
-                # Create and offer downloadable plan with selected priorities
-                create_supplement_plan(
-                    recommendations, 
-                    interactions, 
-                    age_group, 
-                    gender, 
-                    supplement_priorities, 
-                    selected_priorities
-                )
-                
-                # Update timing guide to match selected priorities
-                display_timing_guide(recommendations, age_group, gender, supplement_priorities, selected_priorities)
+                # Add a button to generate the customized plan
+                if st.button("Generate Customized Plan"):
+                    # Create and offer downloadable plan with selected priorities
+                    create_supplement_plan(
+                        recommendations, 
+                        interactions, 
+                        age_group, 
+                        gender, 
+                        supplement_priorities, 
+                        selected_priorities
+                    )
+                    
+                    # Update timing guide to match selected priorities
+                    display_timing_guide(recommendations, age_group, gender, supplement_priorities, selected_priorities)
     
     elif page == "Supplement Reference":
         st.title("Supplement Reference Guide")
