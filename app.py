@@ -814,4 +814,73 @@ def display_recommendations(recommendations, interactions, age_group, gender, su
             # Display name with expandable details
             with st.expander(f"**{supplement['name']}**"):
                 # Main information with hyperlinked benefits
-                if supplement.get('sources') and len(supplement['sources']) > 0:
+                # Add the main program flow
+def main():
+    display_header()
+    
+    # Load data
+    supplements_data, interactions_data, age_health_concerns, supplement_priorities = load_data()
+    
+    # Get user info
+    age_group, gender, special_categories = get_user_info()
+    
+    # Get health concerns
+    health_concerns = get_health_concerns(supplements_data, age_health_concerns, age_group, gender)
+    
+    # Generate plan button
+    if st.button("Generate My Supplement Plan"):
+        # Get recommended supplements
+        recommendations = get_recommended_supplements(supplements_data, age_group, gender, health_concerns)
+        
+        # Check for interactions
+        interactions = check_interactions(recommendations, interactions_data)
+        
+        # Store in session state
+        st.session_state.recommendations = recommendations
+        st.session_state.interactions = interactions
+        st.session_state.user_info = (age_group, gender, special_categories)
+        st.session_state.health_concerns = health_concerns
+        st.session_state.plan_generated = True
+        
+        # Force a rerun to display recommendations
+        st.rerun()
+    
+    # Display recommendations if already generated
+    if st.session_state.plan_generated:
+        recommendations = st.session_state.recommendations
+        interactions = st.session_state.interactions
+        age_group, gender, special_categories = st.session_state.user_info
+        
+        display_recommendations(recommendations, interactions, age_group, gender, supplement_priorities, special_categories)
+
+# Run the app
+if __name__ == "__main__":
+    main()
+sources') and len(supplement['sources']) > 0:
+                    st.write("**Research Sources:**")
+                    for source in supplement['sources']:
+                        st.write(f"- {source}")
+                
+                # Display benefits based on matching health concerns
+                st.write("**Benefits for your health concerns:**")
+                for concern in matching_concerns:
+                    readable_concern = concern.replace("_", " ").title()
+                    st.write(f"- {readable_concern}")
+                
+                # Display dosage information
+                if 'dosage' in supplement:
+                    st.write("**Recommended Dosage:**")
+                    st.write(supplement['dosage'])
+                
+                # Display any notes
+                if 'notes' in supplement:
+                    st.write("**Additional Notes:**")
+                    st.write(supplement['notes'])
+                
+                # Display interaction warnings if any
+                if supp_id in interactions:
+                    st.write("**⚠️ Potential Interactions:**")
+                    for interaction in interactions[supp_id]:
+                        st.write(f"- {interaction['name']}: {interaction['note']}")
+                
+                if supplement.get('
